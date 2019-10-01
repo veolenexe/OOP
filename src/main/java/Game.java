@@ -11,6 +11,12 @@ public class Game
     public void prepareForGame(TextChannel mafiaChannel)
     {
         currentState = GameState.PREPARATION;
+        mafiaChannel.sendMessage("Mafia preparation! Write !participate to enter the game.\n" +
+                                      "Write !Mafia_start to start the game.").queue();
+    }
+
+    public void addParticipant(User participant)
+    {
 
     }
 }
