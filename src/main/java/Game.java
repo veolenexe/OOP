@@ -1,19 +1,26 @@
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 
 public class Game
 {
-    private List<Player> participants;
+    private ArrayList<Player> participants;
     private GameState currentState = GameState.OFFLINE;
     private TextChannel channel;
     private int DayCount;
 
-    public void prepareForGame(TextChannel mafiaChannel)
+    public Game()
     {
-        channel = mafiaChannel;
+        participants = new ArrayList<Player>();
+    }
+
+    public void prepareForGame()
+    {
         currentState = GameState.PREPARATION;
         channel.sendMessage("Mafia preparation! Write \"!join mafia\" to enter the game.\n" +
                                       "Write !Mafia start to start the game.").queue();

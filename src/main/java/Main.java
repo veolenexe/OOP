@@ -16,7 +16,7 @@ public class Main extends ListenerAdapter
     public static void main(String[] args) throws LoginException
     {
         JDABuilder builder = new JDABuilder(AccountType.BOT);
-        String token = "NjI3Nzg5NTkwMzI5MTYzNzc2.XZDg6A.VdwEo5XIJyn0xqjs-4ZmE3dgIP0";
+        String token = "NjI3Nzg5NTkwMzI5MTYzNzc2.XZN87A.3yiiyCD52bKZ6mP0rBc8KR2Ujn4";
         builder.setToken(token);
         builder.addEventListeners(new Main());
         builder.build();
@@ -31,13 +31,10 @@ public class Main extends ListenerAdapter
         if(event.getMessage().getContentRaw().equals("!Mafia") || event.getMessage().getContentRaw().equals("!mafia"))
         {
             game.setChannel(event.getChannel());
-            event.getAuthor().openPrivateChannel().queue((channel) ->
-            {
-                channel.sendMessage("Привет, го приват? ;)").queue();
-            });
+            game.prepareForGame();
         }
         if (event.getMessage().getContentRaw().equals("!join mafia") &&
-                game.isPlayerParticipant(event.getAuthor()) &&
+                !game.isPlayerParticipant(event.getAuthor()) && //Убрать для теста.
                 game.checkCurrentGameState() == GameState.PREPARATION)
         {
             game.addParticipant(event.getAuthor());
