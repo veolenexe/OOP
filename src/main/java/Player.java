@@ -23,4 +23,11 @@ public class Player
     public void setRole(Role role) {
         this.role = role;
     }
+
+    public void sendPrivateMessage(String text){
+        user.openPrivateChannel().queue((channel) ->
+        {
+            channel.sendMessage(text).queue();
+        });
+    }
 }
