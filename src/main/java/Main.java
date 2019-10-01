@@ -11,6 +11,8 @@ import javax.security.auth.login.LoginException;
 
 public class Main extends ListenerAdapter
 {
+    Game game = new Game();
+
     public static void main(String[] args) throws LoginException
     {
         JDABuilder builder = new JDABuilder(AccountType.BOT);
@@ -28,12 +30,32 @@ public class Main extends ListenerAdapter
             printHelp(event);
         if(event.getMessage().getContentRaw().equals("!Mafia") || event.getMessage().getContentRaw().equals("!mafia"))
         {
-            TextChannel mafiaChannel = event.getChannel();
-
+            game.setChannel(event.getChannel());
             event.getAuthor().openPrivateChannel().queue((channel) ->
             {
                 channel.sendMessage("Привет, го приват? ;)").queue();
             });
+        }
+        if (event.getMessage().getContentRaw().equals("!join mafia") &&
+                game.isPlayerParticipant(event.getAuthor()) &&
+                game.checkCurrentGameState() == GameState.PREPARATION)
+        {
+            game.addParticipant(event.getAuthor());
+        }
+
+        if (game.checkCurrentGameState() == GameState.PREPARATION &&
+                event.getMessage().getContentRaw().equals("!Mafia start"))
+        {
+            if (game.checkCurrentPlayersCount() < 5)
+            {
+                game.getChannel().sendMessage("недостаточное кол-во игроков," +
+                        " необходимо 5 или больше, людей в игре: " +
+                        game.checkCurrentPlayersCount()).queue();
+            }
+            else
+            {
+                   game.mafiaStart();
+            }
         }
 
     }

@@ -1,5 +1,6 @@
 public enum GameState
 {
+    OFFLINE,
     PREPARATION,
     DAY,
     NIGHT_MAFIA,
