@@ -25,36 +25,51 @@ public class Main extends ListenerAdapter
     @Override
     public void onGuildMessageReceived(GuildMessageReceivedEvent event)
     {
+        String messageContent = event.getMessage().getContentRaw();
+
         if (event.getAuthor().isBot()) return;
-        if (event.getMessage().getContentRaw().equals("!help"))
-            printHelp(event);
-        if(event.getMessage().getContentRaw().equals("!Mafia") || event.getMessage().getContentRaw().equals("!mafia"))
+        if (messageContent.equals("!help"))  printHelp(event);
+
+        if(messageContent.equals("!Mafia") || messageContent.equals("!mafia"))
         {
             game.setChannel(event.getChannel());
             game.prepareForGame();
         }
-        if (event.getMessage().getContentRaw().equals("!join mafia") &&
-                !game.isPlayerParticipant(event.getAuthor()) && //Убрать для теста.
-                game.checkCurrentGameState() == GameState.PREPARATION)
-        {
-            game.addParticipant(event.getAuthor());
-        }
 
-        if (game.checkCurrentGameState() == GameState.PREPARATION &&
-                event.getMessage().getContentRaw().equals("!Mafia start"))
+        switch (game.getCurrentGameState())
         {
-            if (game.checkCurrentPlayersCount() < 5)
-            {
-                game.getChannel().sendMessage("недостаточное кол-во игроков," +
-                        " необходимо 5 или больше, людей в игре: " +
-                        game.checkCurrentPlayersCount()).queue();
+            case PREPARATION:{
+                switch (messageContent)
+                {
+                    case "!join mafia":{
+                        if(!game.isPlayerParticipant(event.getAuthor()))//Убрать для теста.
+                            game.addParticipant(event.getAuthor());
+                        break;
+                    }
+                    case "!Mafia start":{
+                        if (game.getCurrentPlayersCount() < 5)
+                        {
+                            game.getChannel().sendMessage("недостаточное кол-во игроков," +
+                                    " необходимо 5 или больше людей в игре: " +
+                                    game.getCurrentPlayersCount()).queue();
+                        }
+                        else
+                            game.mafiaStart();
+                        break;
+                    }
+                }
+                break;
             }
-            else
-            {
-                   game.mafiaStart();
+            case DAY: {
+                if (messageContent.startsWith("!vote "))
+                {
+                    String playerName = messageContent.substring(7);
+                    String votedPlayerName = event.getAuthor().getName();
+                    game.makeAVote(playerName, votedPlayerName);
+                }
+                break;
             }
         }
-
     }
 
     private void printHelp(GuildMessageReceivedEvent event)
