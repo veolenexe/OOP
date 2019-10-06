@@ -6,12 +6,13 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-
 import javax.security.auth.login.LoginException;
+import java.util.HashMap;
+import java.util.function.Consumer;
 
 public class Main extends ListenerAdapter
 {
-    Game game = new Game();
+    public static Game game = new Game();
 
     public static void main(String[] args) throws LoginException
     {
@@ -25,6 +26,7 @@ public class Main extends ListenerAdapter
     @Override
     public void onGuildMessageReceived(GuildMessageReceivedEvent event)
     {
+
         String messageContent = event.getMessage().getContentRaw();
 
         if (event.getAuthor().isBot()) return;

@@ -1,62 +1,23 @@
 import net.dv8tion.jda.api.entities.User;
 
-public class Player
-{
-    private User user;
-    private Role role;
+public interface Player {
+    public User getUser();
 
-    private String playerName;
-    private boolean isDead;
+    public Role getRole();
 
-    private boolean hasVoted;
-    private String votedPlayerName;
+    public boolean getIsDead();
 
-    public Player(User user,  Role role)
-    {
-        this.user = user;
-        this.role = role;
-        playerName = user.getName();
-    }
+    public void setIsDead(boolean isDead);
 
-    public User getUser() {
-        return user;
-    }
+    public boolean getHasVoted();
 
-    public Role getRole() {
-        return role;
-    }
+    public void setHasVoted(boolean hasVoted);
 
-    public boolean getHasVoted()
-    {
-        return hasVoted;
-    }
+    public String getVotedPlayerName();
 
-    public void setHasVoted(boolean hasVoted) {
-        this.hasVoted = hasVoted;
-    }
+    public void setVotedPlayerName(String votedPlayerName);
 
-    public String getVotedPlayerName()
-    {
-        return votedPlayerName;
-    }
+    public String getPlayerName() ;
 
-    public void setVotedPlayerName(String votedPlayerName)
-    {
-        this.votedPlayerName = votedPlayerName;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
-    }
-
-    public String getPlayerName() {
-        return playerName;
-    }
-
-    public void sendPrivateMessage(String text){
-        user.openPrivateChannel().queue((channel) ->
-        {
-            channel.sendMessage(text).queue();
-        });
-    }
+    public void sendPrivateMessage(String text);
 }

@@ -1,6 +1,5 @@
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
-import org.w3c.dom.Text;
 
 import java.util.*;
 
@@ -31,7 +30,7 @@ public class Game
 
     public void addParticipant(User participant)
     {
-        Player newParticipant = new Player(participant, Role.CITIZEN);
+        Player newParticipant = new Citizen(participant);
         participants.add(newParticipant);
         sendMessageToChannel("There are: " + participants.size() + " participants.");
     }
@@ -152,9 +151,9 @@ public class Game
         int mafiaCount = (int)(playerCount/4);
         Collections.shuffle(participants);
         for (int i = 0 ; i < mafiaCount; i++)
-            participants.get(i).setRole(Role.MAFIA);
-        participants.get(mafiaCount).setRole(Role.DOCTOR);
-        participants.get(mafiaCount+1).setRole(Role.DETECTIVE);
+            participants.set(i,new Mafia(participants.get(i).getUser()));
+        participants.set(mafiaCount,new Doctor(participants.get(mafiaCount).getUser()));
+        participants.set(mafiaCount+1,new Detective(participants.get(mafiaCount+1).getUser()));
         for (Player person:participants)
         {
             person.sendPrivateMessage("Your role is " + person.getRole());
