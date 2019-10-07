@@ -65,7 +65,7 @@ public class Main extends ListenerAdapter
                         }
                         else
                         {
-                            game.mafiaStart();
+                            game.startGame();
                         }
                         break;
                     }

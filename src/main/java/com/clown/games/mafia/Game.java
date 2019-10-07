@@ -64,7 +64,7 @@ class Game
         return channel;
     }
 
-    void mafiaStart()
+    void startGame()
     {
         sendMessageToChannel("игра началась!");
         shuffleRoles();
