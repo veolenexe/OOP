@@ -1,6 +1,9 @@
+package com.clown.games.mafia.roles;
+
 import net.dv8tion.jda.api.entities.User;
 
-public class Citizen implements Player {
+public class Citizen implements Player
+{
     protected Role role;
     private User user;
     private String playerName;
@@ -8,59 +11,71 @@ public class Citizen implements Player {
     private boolean hasVoted;
     private String votedPlayerName;
 
-    public Citizen(User user) {
+    public Citizen(User user)
+    {
         role = Role.CITIZEN;
         this.user = user;
         playerName = user.getName();
     }
+
     @Override
-    public User getUser() {
+    public User getUser()
+    {
         return user;
     }
 
     @Override
-    public Role getRole() {
+    public Role getRole()
+    {
         return this.role;
     }
 
     @Override
-    public boolean getIsDead() {
+    public boolean getIsDead()
+    {
         return isDead;
     }
 
     @Override
-    public void setIsDead(boolean isDead) {
-        this.isDead=isDead;
+    public void setIsDead(boolean isDead)
+    {
+        this.isDead = isDead;
     }
 
 
     @Override
-    public boolean getHasVoted() {
+    public boolean getHasVoted()
+    {
         return hasVoted;
     }
 
     @Override
-    public void setHasVoted(boolean hasVoted) {
+    public void setHasVoted(boolean hasVoted)
+    {
         this.hasVoted = hasVoted;
     }
 
     @Override
-    public String getVotedPlayerName() {
+    public String getVotedPlayerName()
+    {
         return votedPlayerName;
     }
 
     @Override
-    public void setVotedPlayerName(String votedPlayerName) {
+    public void setVotedPlayerName(String votedPlayerName)
+    {
         this.votedPlayerName = votedPlayerName;
     }
 
     @Override
-    public String getPlayerName() {
+    public String getPlayerName()
+    {
         return playerName;
     }
 
     @Override
-    public void sendPrivateMessage(String text) {
+    public void sendPrivateMessage(String text)
+    {
         user.openPrivateChannel().queue((channel) ->
         {
             channel.sendMessage(text).queue();

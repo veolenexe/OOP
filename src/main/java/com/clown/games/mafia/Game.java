@@ -1,66 +1,70 @@
+package com.clown.games.mafia;
+
+import com.clown.games.mafia.roles.*;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 
 import java.util.*;
 
 
-public class Game
+class Game
 {
-    private ArrayList<Player> participants;
-    private ArrayList<Player> dayDeadPlayers;
+    private List<Player> participants;
+    private List<Player> dayDeadPlayers;
     private Map<String, Integer> votes;
     private int alivePlayers;
     private GameState currentState = GameState.OFFLINE;
     private TextChannel channel;
     private int dayCount;
 
-    public Game()
+    Game()
     {
-        participants = new ArrayList<Player>();
-        dayDeadPlayers = new ArrayList<Player>();
-        votes = new HashMap<String, Integer>();
+        participants = new ArrayList<>();
+        dayDeadPlayers = new ArrayList<>();
+        votes = new HashMap<>();
     }
 
-    public void prepareForGame()
+    void prepareForGame()
     {
         currentState = GameState.PREPARATION;
-        sendMessageToChannel("Mafia preparation! Write \"!join mafia\" to enter the game.\n" +
-                                      "Write !Mafia start to start the game.");
+        sendMessageToChannel("com.clown.games.mafia.roles.Mafia preparation! Write \"!join mafia\" to enter the game.\n" +
+                "Write !com.clown.games.mafia.roles.Mafia start to start the game.");
     }
 
-    public void addParticipant(User participant)
+    void addParticipant(User participant)
     {
         Player newParticipant = new Citizen(participant);
         participants.add(newParticipant);
         sendMessageToChannel("There are: " + participants.size() + " participants.");
     }
 
-    public boolean isPlayerParticipant(User player)
+    boolean isPlayerParticipant(String playerName)
     {
-        return participants.contains(player);
+        Optional<Player> player = getPlayerByName(playerName);
+        return player.filter(value -> participants.contains(value)).isPresent();
     }
 
-    public GameState getCurrentGameState()
+    GameState getCurrentGameState()
     {
         return currentState;
     }
 
-    public int getCurrentPlayersCount()
+    int getCurrentPlayersCount()
     {
         return participants.size();
     }
 
-    public void setChannel(TextChannel channel)
+    void setChannel(TextChannel channel)
     {
         this.channel = channel;
     }
 
-    public TextChannel getChannel()
+    TextChannel getChannel()
     {
         return channel;
     }
 
-    public void mafiaStart()
+    void mafiaStart()
     {
         sendMessageToChannel("игра началась!");
         shuffleRoles();
@@ -70,8 +74,10 @@ public class Game
     private void beginDayState()
     {
         currentState = GameState.DAY;
-        if(dayCount == 0)
+        if (dayCount == 0)
+        {
             sendMessageToChannel("Welcome - citizens! Greet each other!");
+        }
         else
         {
             sendMessageToChannel("Morning, citizens! There are some news...");
@@ -91,56 +97,72 @@ public class Game
     {
         StringBuilder dayInformation = new StringBuilder();
         for (Player player : dayDeadPlayers)
-            dayInformation.append("Player ").append(player.getPlayerName()).append(" died.\n");
+        {
+            dayInformation.append("com.clown.games.mafia.roles.Player ").append(player.getPlayerName()).append(" died.\n");
+        }
         dayInformation.append("There are: ").append(alivePlayers).append(" players alive!");
         sendMessageToChannel(dayInformation.toString());
     }
 
-    public void makeAVote(String playerName, String votingPlayerName)
+    void makeAVote(String playerName, String votingPlayerName)
     {
-        Player player = getPlayerByName(playerName);
-        Player votingPlayer = getPlayerByName(votingPlayerName);
+        Optional<Player> playerOptional = getPlayerByName(playerName);
+        Optional<Player> votingPlayerOptional = getPlayerByName(votingPlayerName);
 
-        if(votingPlayer == null)
+        if (!votingPlayerOptional.isPresent())
+        {
             throw new IllegalArgumentException("Wrong player name!");
-        if(playerName.equals("pass"))
+        }
+
+        Player votingPlayer = votingPlayerOptional.get();
+
+        if (playerName.equals("pass"))
         {
             votingPlayer.setHasVoted(true);
             votingPlayer.setVotedPlayerName("pass");
         }
-        else if(player == null)
+        else if (!playerOptional.isPresent())
+        {
             throw new IllegalArgumentException("Wrong player name!");
+        }
 
-        if(votingPlayer.getHasVoted() && votingPlayer.getVotedPlayerName().equals(playerName))
+        if (votingPlayer.getHasVoted() && votingPlayer.getVotedPlayerName().equals(playerName))
         {
             sendMessageToChannel("Dear, " + votingPlayerName + " you cannot vote twice!");
             return;
         }
 
-        if(votes.containsKey(playerName))
+        if (votes.containsKey(playerName))
+        {
             votes.replace(playerName, votes.get(playerName) + 1);
+        }
         else
+        {
             votes.put(playerName, 1);
+        }
         votingPlayer.setHasVoted(true);
         votingPlayer.setVotedPlayerName(playerName);
-        if(everyoneHasVoted())
+        if (everyoneHasVoted())
+        {
             beginNightState();
+        }
     }
 
-    private Player getPlayerByName(String playerName)
+    private Optional<Player> getPlayerByName(String playerName)
     {
-        for (Player player:participants)
-            if (player.getPlayerName().equals(playerName))
-                return player;
-        return null;
+        return participants.stream()
+                .filter(player -> playerName.equals(player.getPlayerName()))
+                .findAny();
     }
 
     private boolean everyoneHasVoted()
     {
-        for (Player player:participants)
+        for (Player player : participants)
         {
-            if(!player.getHasVoted())
+            if (!player.getHasVoted())
+            {
                 return false;
+            }
         }
         return true;
     }
@@ -148,13 +170,15 @@ public class Game
     private void shuffleRoles()
     {
         int playerCount = getCurrentPlayersCount();
-        int mafiaCount = (int)(playerCount/4);
+        int mafiaCount = playerCount / 4;
         Collections.shuffle(participants);
-        for (int i = 0 ; i < mafiaCount; i++)
-            participants.set(i,new Mafia(participants.get(i).getUser()));
-        participants.set(mafiaCount,new Doctor(participants.get(mafiaCount).getUser()));
-        participants.set(mafiaCount+1,new Detective(participants.get(mafiaCount+1).getUser()));
-        for (Player person:participants)
+        for (int i = 0; i < mafiaCount; i++)
+        {
+            participants.set(i, new Mafia(participants.get(i).getUser()));
+        }
+        participants.set(mafiaCount, new Doctor(participants.get(mafiaCount).getUser()));
+        participants.set(mafiaCount + 1, new Detective(participants.get(mafiaCount + 1).getUser()));
+        for (Player person : participants)
         {
             person.sendPrivateMessage("Your role is " + person.getRole());
         }

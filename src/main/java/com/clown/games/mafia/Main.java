@@ -1,14 +1,11 @@
+package com.clown.games.mafia;
+
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDABuilder;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+
 import javax.security.auth.login.LoginException;
-import java.util.HashMap;
-import java.util.function.Consumer;
 
 public class Main extends ListenerAdapter
 {
@@ -29,10 +26,16 @@ public class Main extends ListenerAdapter
 
         String messageContent = event.getMessage().getContentRaw();
 
-        if (event.getAuthor().isBot()) return;
-        if (messageContent.equals("!help"))  printHelp(event);
+        if (event.getAuthor().isBot())
+        {
+            return;
+        }
+        if (messageContent.equals("!help"))
+        {
+            printHelp(event);
+        }
 
-        if(messageContent.equals("!Mafia") || messageContent.equals("!mafia"))
+        if (messageContent.equals("!com.clown.games.mafia.roles.Mafia") || messageContent.equals("!mafia"))
         {
             game.setChannel(event.getChannel());
             game.prepareForGame();
@@ -40,15 +43,20 @@ public class Main extends ListenerAdapter
 
         switch (game.getCurrentGameState())
         {
-            case PREPARATION:{
+            case PREPARATION:
+            {
                 switch (messageContent)
                 {
-                    case "!join mafia":{
-                        if(!game.isPlayerParticipant(event.getAuthor()))//Убрать для теста.
+                    case "!join mafia":
+                    {
+                        if (!game.isPlayerParticipant(event.getAuthor().getName()))//Убрать для теста.
+                        {
                             game.addParticipant(event.getAuthor());
+                        }
                         break;
                     }
-                    case "!Mafia start":{
+                    case "!com.clown.games.mafia.roles.Mafia start":
+                    {
                         if (game.getCurrentPlayersCount() < 5)
                         {
                             game.getChannel().sendMessage("недостаточное кол-во игроков," +
@@ -56,13 +64,16 @@ public class Main extends ListenerAdapter
                                     game.getCurrentPlayersCount()).queue();
                         }
                         else
+                        {
                             game.mafiaStart();
+                        }
                         break;
                     }
                 }
                 break;
             }
-            case DAY: {
+            case DAY:
+            {
                 if (messageContent.startsWith("!vote "))
                 {
                     String playerName = messageContent.substring(7);
