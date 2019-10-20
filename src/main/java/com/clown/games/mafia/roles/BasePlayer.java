@@ -67,6 +67,4 @@ public abstract class BasePlayer implements Player
     {
         return playerName;
     }
-
-    abstract public void sendPrivateMessage(String text);
 }

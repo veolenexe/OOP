@@ -1,9 +1,9 @@
 package com.clown.games.mafia;
 
 import com.clown.games.mafia.roles.*;
-import com.clown.games.mafia.roles.discord.Detective;
-import com.clown.games.mafia.roles.discord.Doctor;
-import com.clown.games.mafia.roles.discord.Mafia;
+import com.clown.games.mafia.roles.Detective;
+import com.clown.games.mafia.roles.Doctor;
+import com.clown.games.mafia.roles.Mafia;
 
 import java.util.*;
 
@@ -169,7 +169,7 @@ class Game
         participants.set(mafiaCount + 1, new Detective(participants.get(mafiaCount + 1)));
         for (Player person : participants)
         {
-            person.sendPrivateMessage("Your role is " + person.getRole());
+            messageSender.sendMessageToPlayer("Your role is " + person.getRole(), person);
         }
     }
 

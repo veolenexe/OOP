@@ -1,24 +1,24 @@
 package com.clown.games.mafia;
 
 import com.clown.games.mafia.roles.Player;
-import com.clown.games.mafia.roles.discord.Citizen;
-import com.clown.games.mafia.roles.discord.DiscordPlayer;
+import com.clown.games.mafia.roles.Citizen;
 import net.dv8tion.jda.api.entities.User;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class DiscordMafiaBot
+class DiscordMafiaBot
 {
     private Game game;
     private DiscordMessageSender messageSender;
     private DiscordMessageListener messageListener;
-    public Map<Player, User> discordUsers;
+    private Map<Player, User> discordUsers;
 
     DiscordMafiaBot(DiscordMessageSender messageSender,
                     DiscordMessageListener messageListener)
     {
         this.messageSender = messageSender;
+        messageSender.setDiscordMafiaBot(this);
         this.messageListener = messageListener;
         messageListener.setReceivingFunction(message ->
         {
@@ -50,7 +50,8 @@ public class DiscordMafiaBot
                     {
                         if (!game.isPlayerParticipant(messageListener.getMessageAuthor().getName()))//Убрать для теста.
                         {
-                            DiscordPlayer newPlayer = new Citizen(messageListener.getMessageAuthor());
+                            Player newPlayer = new Citizen(messageListener.getMessageAuthor().getName());
+                            discordUsers.put(newPlayer, messageListener.getMessageAuthor());
                             game.addParticipant(newPlayer);
                         }
                         break;
@@ -95,7 +96,7 @@ public class DiscordMafiaBot
         return messageListener;
     }
 
-    public User getUserByPlayer(Player player)
+    User getUserByPlayer(Player player)
     {
         return discordUsers.getOrDefault(player, null);
     }

@@ -22,7 +22,5 @@ public interface Player
 
     String getPlayerName();
 
-    void sendPrivateMessage(String text);
-
     void makeMove(List<Player> players);
 }
