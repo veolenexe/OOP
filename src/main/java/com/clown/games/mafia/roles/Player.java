@@ -1,26 +1,28 @@
 package com.clown.games.mafia.roles;
 
-import net.dv8tion.jda.api.entities.User;
+import java.util.List;
 
 public interface Player
 {
-    public User getUser();
+    Role getRole();
 
-    public Role getRole();
+    void setRole(Role role);
 
-    public boolean getIsDead();
+    boolean getIsDead();
 
-    public void setIsDead(boolean isDead);
+    void setIsDead(boolean isDead);
 
-    public boolean getHasVoted();
+    boolean getHasVoted();
 
-    public void setHasVoted(boolean hasVoted);
+    void setHasVoted(boolean hasVoted);
 
-    public String getVotedPlayerName();
+    String getVotedPlayerName();
 
-    public void setVotedPlayerName(String votedPlayerName);
+    void setVotedPlayerName(String votedPlayerName);
 
-    public String getPlayerName();
+    String getPlayerName();
 
-    public void sendPrivateMessage(String text);
+    void sendPrivateMessage(String text);
+
+    void makeMove(List<Player> players);
 }

@@ -1,33 +1,29 @@
 package com.clown.games.mafia.roles;
 
-import net.dv8tion.jda.api.entities.User;
-
-public class Citizen implements Player
+public abstract class BasePlayer implements Player
 {
     protected Role role;
-    private User user;
-    private String playerName;
+    protected String playerName;
     private boolean isDead;
     private boolean hasVoted;
     private String votedPlayerName;
 
-    public Citizen(User user)
+    public BasePlayer(String playerName, Role role)
     {
-        role = Role.CITIZEN;
-        this.user = user;
-        playerName = user.getName();
-    }
-
-    @Override
-    public User getUser()
-    {
-        return user;
+        this.role = role;
+        this.playerName = playerName;
     }
 
     @Override
     public Role getRole()
     {
         return this.role;
+    }
+
+    @Override
+    public void setRole(Role role)
+    {
+        this.role = role;
     }
 
     @Override
@@ -41,7 +37,6 @@ public class Citizen implements Player
     {
         this.isDead = isDead;
     }
-
 
     @Override
     public boolean getHasVoted()
@@ -73,12 +68,5 @@ public class Citizen implements Player
         return playerName;
     }
 
-    @Override
-    public void sendPrivateMessage(String text)
-    {
-        user.openPrivateChannel().queue((channel) ->
-        {
-            channel.sendMessage(text).queue();
-        });
-    }
+    abstract public void sendPrivateMessage(String text);
 }

@@ -1,8 +1,9 @@
 package com.clown.games.mafia;
 
 import com.clown.games.mafia.roles.*;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.entities.User;
+import com.clown.games.mafia.roles.discord.Detective;
+import com.clown.games.mafia.roles.discord.Doctor;
+import com.clown.games.mafia.roles.discord.Mafia;
 
 import java.util.*;
 
@@ -14,7 +15,7 @@ class Game
     private Map<String, Integer> votes;
     private int alivePlayers;
     private GameState currentState = GameState.OFFLINE;
-    private TextChannel channel;
+    private MessageSender messageSender;
     private int dayCount;
 
     Game()
@@ -27,15 +28,14 @@ class Game
     void prepareForGame()
     {
         currentState = GameState.PREPARATION;
-        sendMessageToChannel("com.clown.games.mafia.roles.Mafia preparation! Write \"!join mafia\" to enter the game.\n" +
-                "Write !com.clown.games.mafia.roles.Mafia start to start the game.");
+        sendMessage("Mafia preparation! Write \"!join mafia\" to enter the game.\n" +
+                "Write !Mafia start to start the game.");
     }
 
-    void addParticipant(User participant)
+    void addParticipant(Player participant)
     {
-        Player newParticipant = new Citizen(participant);
-        participants.add(newParticipant);
-        sendMessageToChannel("There are: " + participants.size() + " participants.");
+        participants.add(participant);
+        sendMessage("There are: " + participants.size() + " participants.");
     }
 
     boolean isPlayerParticipant(String playerName)
@@ -54,19 +54,15 @@ class Game
         return participants.size();
     }
 
-    void setChannel(TextChannel channel)
+    void setMessageSender(MessageSender messageSender)
     {
-        this.channel = channel;
+        this.messageSender = messageSender;
     }
 
-    TextChannel getChannel()
-    {
-        return channel;
-    }
 
     void startGame()
     {
-        sendMessageToChannel("игра началась!");
+        sendMessage("игра началась!");
         shuffleRoles();
         beginDayState();
     }
@@ -76,13 +72,13 @@ class Game
         currentState = GameState.DAY;
         if (dayCount == 0)
         {
-            sendMessageToChannel("Welcome - citizens! Greet each other!");
+            sendMessage("Welcome - citizens! Greet each other!");
         }
         else
         {
-            sendMessageToChannel("Morning, citizens! There are some news...");
+            sendMessage("Morning, citizens! There are some news...");
             sendDayInformation();
-            sendMessageToChannel("Now it's time to vote! Vote wisely...");
+            sendMessage("Now it's time to vote! Vote wisely...");
         }
 
     }
@@ -90,7 +86,7 @@ class Game
     private void beginNightState()
     {
         currentState = GameState.NIGHT_MAFIA;
-        sendMessageToChannel("It's night time! Go to bed. NOW!");
+        sendMessage("It's night time! Go to bed. NOW!");
     }
 
     private void sendDayInformation()
@@ -98,10 +94,10 @@ class Game
         StringBuilder dayInformation = new StringBuilder();
         for (Player player : dayDeadPlayers)
         {
-            dayInformation.append("com.clown.games.mafia.roles.Player ").append(player.getPlayerName()).append(" died.\n");
+            dayInformation.append("Player ").append(player.getPlayerName()).append(" died.\n");
         }
         dayInformation.append("There are: ").append(alivePlayers).append(" players alive!");
-        sendMessageToChannel(dayInformation.toString());
+        sendMessage(dayInformation.toString());
     }
 
     void makeAVote(String playerName, String votingPlayerName)
@@ -109,7 +105,7 @@ class Game
         Optional<Player> playerOptional = getPlayerByName(playerName);
         Optional<Player> votingPlayerOptional = getPlayerByName(votingPlayerName);
 
-        if (!votingPlayerOptional.isPresent())
+        if (votingPlayerOptional.isEmpty())
         {
             throw new IllegalArgumentException("Wrong player name!");
         }
@@ -121,14 +117,14 @@ class Game
             votingPlayer.setHasVoted(true);
             votingPlayer.setVotedPlayerName("pass");
         }
-        else if (!playerOptional.isPresent())
+        else if (playerOptional.isEmpty())
         {
             throw new IllegalArgumentException("Wrong player name!");
         }
 
         if (votingPlayer.getHasVoted() && votingPlayer.getVotedPlayerName().equals(playerName))
         {
-            sendMessageToChannel("Dear, " + votingPlayerName + " you cannot vote twice!");
+            sendMessage("Dear, " + votingPlayerName + " you cannot vote twice!");
             return;
         }
 
@@ -157,14 +153,7 @@ class Game
 
     private boolean everyoneHasVoted()
     {
-        for (Player player : participants)
-        {
-            if (!player.getHasVoted())
-            {
-                return false;
-            }
-        }
-        return true;
+        return participants.stream().allMatch(Player::getHasVoted);
     }
 
     private void shuffleRoles()
@@ -174,10 +163,10 @@ class Game
         Collections.shuffle(participants);
         for (int i = 0; i < mafiaCount; i++)
         {
-            participants.set(i, new Mafia(participants.get(i).getUser()));
+            participants.set(i, new Mafia(participants.get(i)));
         }
-        participants.set(mafiaCount, new Doctor(participants.get(mafiaCount).getUser()));
-        participants.set(mafiaCount + 1, new Detective(participants.get(mafiaCount + 1).getUser()));
+        participants.set(mafiaCount, new Doctor(participants.get(mafiaCount)));
+        participants.set(mafiaCount + 1, new Detective(participants.get(mafiaCount + 1)));
         for (Player person : participants)
         {
             person.sendPrivateMessage("Your role is " + person.getRole());
@@ -185,9 +174,9 @@ class Game
     }
 
 
-    private void sendMessageToChannel(String message)
+    private void sendMessage(String message)
     {
-        channel.sendMessage(message).queue();
+        messageSender.sendMessage(message);
     }
 
 }
