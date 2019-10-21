@@ -1,10 +1,10 @@
 package com.clown.games.mafia;
 
-import com.clown.games.mafia.roles.Player;
+import com.clown.games.mafia.roles.IPlayer;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 
-public class DiscordMessageSender implements MessageSender
+public class DiscordMessageSender implements IMessageSender
 {
     private TextChannel textChannel;
     private DiscordMafiaBot discordMafiaBot;
@@ -21,7 +21,7 @@ public class DiscordMessageSender implements MessageSender
     }
 
     @Override
-    public void sendMessageToPlayer(String message, Player player)
+    public void sendMessageToPlayer(String message, IPlayer player)
     {
         User user = discordMafiaBot.getUserByPlayer(player);
         user.openPrivateChannel().queue((channel) ->

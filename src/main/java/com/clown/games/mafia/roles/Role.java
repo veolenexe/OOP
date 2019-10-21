@@ -1,9 +1,18 @@
 package com.clown.games.mafia.roles;
 
-public enum Role
+
+public abstract class Role implements IRole
 {
-    CITIZEN,
-    MAFIA,
-    DOCTOR,
-    DETECTIVE
+    private Roles role;
+
+    public Roles getRole()
+    {
+        return role;
+    }
+
+    public void setRole(Roles role)
+    {
+        this.role = role;
+    }
+
 }

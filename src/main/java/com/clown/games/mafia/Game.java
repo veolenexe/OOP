@@ -10,12 +10,12 @@ import java.util.*;
 
 class Game
 {
-    private List<Player> participants;
-    private List<Player> dayDeadPlayers;
+    private List<IPlayer> participants;
+    private List<IPlayer> dayDeadPlayers;
     private Map<String, Integer> votes;
     private int alivePlayers;
     private GameState currentState = GameState.OFFLINE;
-    private MessageSender messageSender;
+    private IMessageSender messageSender;
     private int dayCount;
 
     Game()
@@ -32,7 +32,7 @@ class Game
                 "Write !Mafia start to start the game.");
     }
 
-    void addParticipant(Player participant)
+    void addParticipant(IPlayer participant)
     {
         participants.add(participant);
         sendMessage("There are: " + participants.size() + " participants.");
@@ -40,7 +40,7 @@ class Game
 
     boolean isPlayerParticipant(String playerName)
     {
-        Optional<Player> player = getPlayerByName(playerName);
+        Optional<IPlayer> player = getPlayerByName(playerName);
         return player.filter(value -> participants.contains(value)).isPresent();
     }
 
@@ -54,7 +54,7 @@ class Game
         return participants.size();
     }
 
-    void setMessageSender(MessageSender messageSender)
+    void setMessageSender(IMessageSender messageSender)
     {
         this.messageSender = messageSender;
     }
@@ -92,7 +92,7 @@ class Game
     private void sendDayInformation()
     {
         StringBuilder dayInformation = new StringBuilder();
-        for (Player player : dayDeadPlayers)
+        for (IPlayer player : dayDeadPlayers)
         {
             dayInformation.append("Player ").append(player.getPlayerName()).append(" died.\n");
         }
@@ -102,15 +102,15 @@ class Game
 
     void makeAVote(String playerName, String votingPlayerName)
     {
-        Optional<Player> playerOptional = getPlayerByName(playerName);
-        Optional<Player> votingPlayerOptional = getPlayerByName(votingPlayerName);
+        Optional<IPlayer> playerOptional = getPlayerByName(playerName);
+        Optional<IPlayer> votingPlayerOptional = getPlayerByName(votingPlayerName);
 
         if (votingPlayerOptional.isEmpty())
         {
             throw new IllegalArgumentException("Wrong player name!");
         }
 
-        Player votingPlayer = votingPlayerOptional.get();
+        IPlayer votingPlayer = votingPlayerOptional.get();
 
         if (playerName.equals("pass"))
         {
@@ -144,7 +144,7 @@ class Game
         }
     }
 
-    private Optional<Player> getPlayerByName(String playerName)
+    private Optional<IPlayer> getPlayerByName(String playerName)
     {
         return participants.stream()
                 .filter(player -> playerName.equals(player.getPlayerName()))
@@ -153,21 +153,28 @@ class Game
 
     private boolean everyoneHasVoted()
     {
-        return participants.stream().allMatch(Player::getHasVoted);
+        return participants.stream().allMatch(IPlayer::getHasVoted);
     }
 
     private void shuffleRoles()
     {
         int playerCount = getCurrentPlayersCount();
         int mafiaCount = playerCount / 4;
+        int doctorIndex = mafiaCount;
+        int detectiveIndex = mafiaCount + 1;
+        int citizenIndex = mafiaCount + 2;
         Collections.shuffle(participants);
         for (int i = 0; i < mafiaCount; i++)
         {
-            participants.set(i, new Mafia(participants.get(i)));
+            participants.get(i).setRole(Roles.MAFIA);
         }
-        participants.set(mafiaCount, new Doctor(participants.get(mafiaCount)));
-        participants.set(mafiaCount + 1, new Detective(participants.get(mafiaCount + 1)));
-        for (Player person : participants)
+        participants.get(doctorIndex).setRole(Roles.DOCTOR);
+        participants.get(detectiveIndex).setRole(Roles.DETECTIVE);
+        for (int i = citizenIndex; i< playerCount; i++)
+        {
+            participants.get(i).setRole(Roles.CITIZEN);
+        }
+        for (IPlayer person : participants)
         {
             messageSender.sendMessageToPlayer("Your role is " + person.getRole(), person);
         }

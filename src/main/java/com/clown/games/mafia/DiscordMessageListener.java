@@ -7,7 +7,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import java.util.function.Function;
 
-public class DiscordMessageListener extends ListenerAdapter implements MessageListener
+public class DiscordMessageListener extends ListenerAdapter implements IMessageListener
 {
     private Function<String, Boolean> receivingFunction;
     private TextChannel textChannel;

@@ -1,6 +1,6 @@
 package com.clown.games.mafia;
 
-import com.clown.games.mafia.roles.Player;
+import com.clown.games.mafia.roles.IPlayer;
 import com.clown.games.mafia.roles.Citizen;
 import net.dv8tion.jda.api.entities.User;
 
@@ -12,7 +12,7 @@ class DiscordMafiaBot
     private Game game;
     private DiscordMessageSender messageSender;
     private DiscordMessageListener messageListener;
-    private Map<Player, User> discordUsers;
+    private Map<IPlayer, User> discordUsers;
 
     DiscordMafiaBot(DiscordMessageSender messageSender,
                     DiscordMessageListener messageListener)
@@ -50,7 +50,7 @@ class DiscordMafiaBot
                     {
                         if (!game.isPlayerParticipant(messageListener.getMessageAuthor().getName()))//Убрать для теста.
                         {
-                            Player newPlayer = new Citizen(messageListener.getMessageAuthor().getName());
+                            IPlayer newPlayer = new Citizen(messageListener.getMessageAuthor().getName());
                             discordUsers.put(newPlayer, messageListener.getMessageAuthor());
                             game.addParticipant(newPlayer);
                         }
@@ -91,12 +91,12 @@ class DiscordMafiaBot
         messageSender.sendMessage("No one will help you!");
     }
 
-    MessageListener getMessageListener()
+    IMessageListener getMessageListener()
     {
         return messageListener;
     }
 
-    User getUserByPlayer(Player player)
+    User getUserByPlayer(IPlayer player)
     {
         return discordUsers.getOrDefault(player, null);
     }

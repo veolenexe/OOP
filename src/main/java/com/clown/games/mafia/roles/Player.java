@@ -1,26 +1,71 @@
 package com.clown.games.mafia.roles;
 
-import java.util.List;
-
-public interface Player
+public abstract class Player implements IPlayer
 {
-    Role getRole();
+    protected IRole role;
 
-    void setRole(Role role);
+    protected String playerName;
+    private boolean isDead;
+    private boolean hasVoted;
+    private String votedPlayerName;
 
-    boolean getIsDead();
+    public Player(String playerName, Roles role)
+    {
+        this.role.setRole(role);
+        this.playerName = playerName;
+    }
 
-    void setIsDead(boolean isDead);
+    @Override
+    public Roles getRole()
+    {
+        return role.getRole();
+    }
 
-    boolean getHasVoted();
+    @Override
+    public void setRole(Roles role)
+    {
+        this.role.setRole(role);
+    }
 
-    void setHasVoted(boolean hasVoted);
+    @Override
+    public boolean getIsDead()
+    {
+        return isDead;
+    }
 
-    String getVotedPlayerName();
+    @Override
+    public void setIsDead(boolean isDead)
+    {
+        this.isDead = isDead;
+    }
 
-    void setVotedPlayerName(String votedPlayerName);
+    @Override
+    public boolean getHasVoted()
+    {
+        return hasVoted;
+    }
 
-    String getPlayerName();
+    @Override
+    public void setHasVoted(boolean hasVoted)
+    {
+        this.hasVoted = hasVoted;
+    }
 
-    void makeMove(List<Player> players);
+    @Override
+    public String getVotedPlayerName()
+    {
+        return votedPlayerName;
+    }
+
+    @Override
+    public void setVotedPlayerName(String votedPlayerName)
+    {
+        this.votedPlayerName = votedPlayerName;
+    }
+
+    @Override
+    public String getPlayerName()
+    {
+        return playerName;
+    }
 }
