@@ -3,16 +3,16 @@ package com.clown.games.mafia.roles;
 public abstract class Player implements IPlayer
 {
     protected IRole role;
-
+    private String uniqueIdentifier;
     protected String playerName;
     private boolean isDead;
     private boolean hasVoted;
     private String votedPlayerName;
 
-    public Player(String playerName, Roles role)
+    public Player(String playerName, String uniqueIdentifier)
     {
-        this.role.setRole(role);
         this.playerName = playerName;
+        this.uniqueIdentifier = uniqueIdentifier;
     }
 
     @Override

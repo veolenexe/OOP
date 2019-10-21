@@ -23,4 +23,6 @@ public interface IPlayer
     String getPlayerName();
 
     void makeMove(List<IPlayer> players);
+
+    void sendPrivateMessage(String message);
 }

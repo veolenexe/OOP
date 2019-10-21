@@ -1,7 +1,6 @@
 package com.clown.games.mafia;
 
 import com.clown.games.mafia.roles.IPlayer;
-import com.clown.games.mafia.roles.Citizen;
 import net.dv8tion.jda.api.entities.User;
 
 import java.util.HashMap;
@@ -50,7 +49,7 @@ class DiscordMafiaBot
                     {
                         if (!game.isPlayerParticipant(messageListener.getMessageAuthor().getName()))//Убрать для теста.
                         {
-                            IPlayer newPlayer = new Citizen(messageListener.getMessageAuthor().getName());
+                            IPlayer newPlayer = new DiscordPlayer(messageListener.getMessageAuthor());
                             discordUsers.put(newPlayer, messageListener.getMessageAuthor());
                             game.addParticipant(newPlayer);
                         }
