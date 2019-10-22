@@ -1,18 +1,34 @@
 package com.clown.games.mafia.roles;
 
-
 public abstract class Role implements IRole
 {
-    private Roles role;
+    Roles role;
 
     public Roles getRole()
     {
         return role;
     }
 
-    public void setRole(Roles role)
+    public static IRole makeRole(Roles role)
     {
-        this.role = role;
+        switch (role)
+        {
+            case MAFIA:
+            {
+                return new Mafia();
+            }
+            case DOCTOR:
+            {
+                return new Doctor();
+            }
+            case DETECTIVE:
+            {
+                return new Detective();
+            }
+            default:
+            {
+                return new Citizen();
+            }
+        }
     }
-
 }

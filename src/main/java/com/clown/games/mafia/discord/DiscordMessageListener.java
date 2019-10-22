@@ -1,5 +1,6 @@
-package com.clown.games.mafia;
+package com.clown.games.mafia.discord;
 
+import com.clown.games.mafia.messaging.IMessageListener;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;

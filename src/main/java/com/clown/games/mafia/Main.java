@@ -1,5 +1,8 @@
 package com.clown.games.mafia;
 
+import com.clown.games.mafia.discord.DiscordMafiaBot;
+import com.clown.games.mafia.discord.DiscordMessageListener;
+import com.clown.games.mafia.discord.DiscordMessageSender;
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDABuilder;
 
@@ -10,7 +13,7 @@ public class Main
     public static void main(String[] args) throws LoginException
     {
         JDABuilder builder = new JDABuilder(AccountType.BOT);
-        String token = "NjI3Nzg5NTkwMzI5MTYzNzc2.XZN87A.3yiiyCD52bKZ6mP0rBc8KR2Ujn4";
+        String token = "";
         builder.setToken(token);
         DiscordMessageSender discordMessageSender = new DiscordMessageSender();
         DiscordMessageListener discordMessageListener = new DiscordMessageListener();

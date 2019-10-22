@@ -1,23 +1,20 @@
-package com.clown.games.mafia;
+package com.clown.games.mafia.discord;
 
-import com.clown.games.mafia.roles.IPlayer;
+import com.clown.games.mafia.Game;
+import com.clown.games.mafia.messaging.IMessageListener;
+import com.clown.games.mafia.player.IPlayer;
 import net.dv8tion.jda.api.entities.User;
 
-import java.util.HashMap;
-import java.util.Map;
-
-class DiscordMafiaBot
+public class DiscordMafiaBot
 {
     private Game game;
     private DiscordMessageSender messageSender;
     private DiscordMessageListener messageListener;
-    private Map<IPlayer, User> discordUsers;
 
-    DiscordMafiaBot(DiscordMessageSender messageSender,
+    public DiscordMafiaBot(DiscordMessageSender messageSender,
                     DiscordMessageListener messageListener)
     {
         this.messageSender = messageSender;
-        messageSender.setDiscordMafiaBot(this);
         this.messageListener = messageListener;
         messageListener.setReceivingFunction(message ->
         {
@@ -26,7 +23,6 @@ class DiscordMafiaBot
         });
         game = new Game();
         game.setMessageSender(messageSender);
-        discordUsers = new HashMap<>();
     }
 
     private void onMessageReceived(String message)
@@ -38,7 +34,9 @@ class DiscordMafiaBot
         if ("!Mafia".equalsIgnoreCase(message))
         {
             messageSender.setTextChannel(messageListener.getTextChannel());
+            game.prepareForGame();
         }
+        User user = messageListener.getMessageAuthor();
         switch (game.getCurrentGameState())
         {
             case PREPARATION:
@@ -47,10 +45,9 @@ class DiscordMafiaBot
                 {
                     case "!join mafia":
                     {
-                        if (!game.isPlayerParticipant(messageListener.getMessageAuthor().getName()))//Убрать для теста.
+                        if (!game.isPlayerParticipant(user.getId()))//Убрать для теста.
                         {
-                            IPlayer newPlayer = new DiscordPlayer(messageListener.getMessageAuthor());
-                            discordUsers.put(newPlayer, messageListener.getMessageAuthor());
+                            IPlayer newPlayer = new DiscordPlayer(user, game.getCurrentPlayersCount() + 1);
                             game.addParticipant(newPlayer);
                         }
                         break;
@@ -76,9 +73,9 @@ class DiscordMafiaBot
             {
                 if (message.startsWith("!vote "))
                 {
-                    String playerName = message.substring(7);
-                    String votedPlayerName = messageListener.getMessageAuthor().getName();
-                    game.makeAVote(playerName, votedPlayerName);
+                    String playerNumber = message.substring(7, 8);
+                    String votedPlayerId = user.getId();
+                    game.makeAVote(playerNumber, votedPlayerId);
                 }
                 break;
             }
@@ -90,13 +87,8 @@ class DiscordMafiaBot
         messageSender.sendMessage("No one will help you!");
     }
 
-    IMessageListener getMessageListener()
+    public IMessageListener getMessageListener()
     {
         return messageListener;
-    }
-
-    User getUserByPlayer(IPlayer player)
-    {
-        return discordUsers.getOrDefault(player, null);
     }
 }

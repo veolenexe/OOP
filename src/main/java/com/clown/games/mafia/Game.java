@@ -1,14 +1,13 @@
 package com.clown.games.mafia;
 
+import com.clown.games.mafia.messaging.IMessageSender;
+import com.clown.games.mafia.player.IPlayer;
 import com.clown.games.mafia.roles.*;
-import com.clown.games.mafia.roles.Detective;
-import com.clown.games.mafia.roles.Doctor;
-import com.clown.games.mafia.roles.Mafia;
 
 import java.util.*;
 
 
-class Game
+public class Game
 {
     private List<IPlayer> participants;
     private List<IPlayer> dayDeadPlayers;
@@ -18,49 +17,49 @@ class Game
     private IMessageSender messageSender;
     private int dayCount;
 
-    Game()
+    public Game()
     {
         participants = new ArrayList<>();
         dayDeadPlayers = new ArrayList<>();
         votes = new HashMap<>();
     }
 
-    void prepareForGame()
+    public void prepareForGame()
     {
         currentState = GameState.PREPARATION;
         sendMessage("Mafia preparation! Write \"!join mafia\" to enter the game.\n" +
                 "Write !Mafia start to start the game.");
     }
 
-    void addParticipant(IPlayer participant)
+    public void addParticipant(IPlayer participant)
     {
         participants.add(participant);
         sendMessage("There are: " + participants.size() + " participants.");
     }
 
-    boolean isPlayerParticipant(String playerName)
+    public boolean isPlayerParticipant(String playerID)
     {
-        Optional<IPlayer> player = getPlayerByName(playerName);
+        Optional<IPlayer> player = getPlayerByID(playerID);
         return player.filter(value -> participants.contains(value)).isPresent();
     }
 
-    GameState getCurrentGameState()
+    public GameState getCurrentGameState()
     {
         return currentState;
     }
 
-    int getCurrentPlayersCount()
+    public int getCurrentPlayersCount()
     {
         return participants.size();
     }
 
-    void setMessageSender(IMessageSender messageSender)
+    public void setMessageSender(IMessageSender messageSender)
     {
         this.messageSender = messageSender;
     }
 
 
-    void startGame()
+    public void startGame()
     {
         sendMessage("игра началась!");
         shuffleRoles();
@@ -73,6 +72,7 @@ class Game
         if (dayCount == 0)
         {
             sendMessage("Welcome - citizens! Greet each other!");
+            alivePlayers = getCurrentPlayersCount();
         }
         else
         {
@@ -100,54 +100,78 @@ class Game
         sendMessage(dayInformation.toString());
     }
 
-    void makeAVote(String playerName, String votingPlayerName)
+    public void makeAVote(String playerNumber, String votingPlayerID)
     {
-        Optional<IPlayer> playerOptional = getPlayerByName(playerName);
-        Optional<IPlayer> votingPlayerOptional = getPlayerByName(votingPlayerName);
-
+        Optional<IPlayer> votingPlayerOptional = getPlayerByID(votingPlayerID);
         if (votingPlayerOptional.isEmpty())
         {
             throw new IllegalArgumentException("Wrong player name!");
         }
-
         IPlayer votingPlayer = votingPlayerOptional.get();
 
-        if (playerName.equals("pass"))
+        int playerNumberToVote;
+
+        try
         {
-            votingPlayer.setHasVoted(true);
-            votingPlayer.setVotedPlayerName("pass");
+            playerNumberToVote = Integer.parseInt(playerNumber);
         }
-        else if (playerOptional.isEmpty())
+        catch (NumberFormatException e)
         {
-            throw new IllegalArgumentException("Wrong player name!");
+            if (playerNumber.equals("pass"))
+            {
+                votingPlayer.setHasVoted(true);
+                votingPlayer.setVotedPlayerID("pass");
+                return;
+            }
+            else
+            {
+                throw new IllegalArgumentException("Wrong player number!");
+            }
         }
 
-        if (votingPlayer.getHasVoted() && votingPlayer.getVotedPlayerName().equals(playerName))
+        Optional<IPlayer> playerOptional = getPlayerByNumber(playerNumberToVote);
+
+        if (playerOptional.isEmpty())
         {
-            sendMessage("Dear, " + votingPlayerName + " you cannot vote twice!");
+            throw new IllegalArgumentException("Wrong player number!");
+        }
+
+        IPlayer votedPlayer = playerOptional.get();
+        String votedPlayerID = votedPlayer.getVotedPlayerID();
+
+        if (votingPlayer.getHasVoted() && votingPlayer.getVotedPlayerID().equals(votedPlayerID))
+        {
+            sendMessage("Dear, " + votingPlayerID + " you cannot vote twice!");
             return;
         }
 
-        if (votes.containsKey(playerName))
+        if (votes.containsKey(votedPlayerID))
         {
-            votes.replace(playerName, votes.get(playerName) + 1);
+            votes.replace(votedPlayerID, votes.get(votedPlayerID) + 1);
         }
         else
         {
-            votes.put(playerName, 1);
+            votes.put(votedPlayerID, 1);
         }
         votingPlayer.setHasVoted(true);
-        votingPlayer.setVotedPlayerName(playerName);
+        votingPlayer.setVotedPlayerID(votedPlayerID);
         if (everyoneHasVoted())
         {
             beginNightState();
         }
     }
 
-    private Optional<IPlayer> getPlayerByName(String playerName)
+    private Optional<IPlayer> getPlayerByID(String playerID)
     {
         return participants.stream()
-                .filter(player -> playerName.equals(player.getPlayerName()))
+                .filter(player -> playerID.equals(player.getPlayerID()))
+                .findAny();
+    }
+
+    private Optional<IPlayer> getPlayerByNumber(int playerNumber)
+    {
+        return participants.stream()
+                .filter(player -> playerNumber == player.getPlayerNumber())
                 .findAny();
     }
 
@@ -176,7 +200,7 @@ class Game
         }
         for (IPlayer person : participants)
         {
-            messageSender.sendMessageToPlayer("Your role is " + person.getRole(), person);
+            person.sendPrivateMessage("Your role is " + person.getRole());
         }
     }
 
