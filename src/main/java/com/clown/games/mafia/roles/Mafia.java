@@ -10,6 +10,7 @@ public class Mafia extends Role
     {
         role = Roles.MAFIA;
     }
+
     @Override
     public void makeMove(List<IPlayer> players)
     {

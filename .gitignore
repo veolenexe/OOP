@@ -1,6 +1,7 @@
 # Default ignored files
 /.idea
 A1.iml
+pom.xml
 mafia.iml
 OOP.iml
 /target

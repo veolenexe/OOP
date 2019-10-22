@@ -10,7 +10,6 @@ import java.util.*;
 public class Game
 {
     private List<IPlayer> participants;
-    private List<IPlayer> dayDeadPlayers;
     private Map<String, Integer> votes;
     private int alivePlayers;
     private GameState currentState = GameState.OFFLINE;
@@ -20,7 +19,6 @@ public class Game
     public Game()
     {
         participants = new ArrayList<>();
-        dayDeadPlayers = new ArrayList<>();
         votes = new HashMap<>();
     }
 
@@ -30,34 +28,6 @@ public class Game
         sendMessage("Mafia preparation! Write \"!join mafia\" to enter the game.\n" +
                 "Write !Mafia start to start the game.");
     }
-
-    public void addParticipant(IPlayer participant)
-    {
-        participants.add(participant);
-        sendMessage("There are: " + participants.size() + " participants.");
-    }
-
-    public boolean isPlayerParticipant(String playerID)
-    {
-        Optional<IPlayer> player = getPlayerByID(playerID);
-        return player.filter(value -> participants.contains(value)).isPresent();
-    }
-
-    public GameState getCurrentGameState()
-    {
-        return currentState;
-    }
-
-    public int getCurrentPlayersCount()
-    {
-        return participants.size();
-    }
-
-    public void setMessageSender(IMessageSender messageSender)
-    {
-        this.messageSender = messageSender;
-    }
-
 
     public void startGame()
     {
@@ -73,31 +43,53 @@ public class Game
         {
             sendMessage("Welcome - citizens! Greet each other!");
             alivePlayers = getCurrentPlayersCount();
+            sendMessage("Write !Mafia night to begin the game!");
         }
         else
         {
             sendMessage("Morning, citizens! There are some news...");
             sendDayInformation();
-            sendMessage("Now it's time to vote! Vote wisely...");
+            sendMessage("Now it's time to vote! Vote wisely...\n");
+            sendMessage("Write '!Vote 1', to vote for first player, and so on...\n");
         }
 
+    }
+
+    private void sendDayInformation()
+    {
+        StringBuilder dayInformation = new StringBuilder();
+        dayInformation.append("There are: ").append(alivePlayers).append(" players alive!\n");
+
+        for (IPlayer player : participants)
+        {
+            if(!player.getIsDead())
+            {
+                continue;
+            }
+            String playerName = player.getPlayerName();
+            String playerNumber = Integer.toString(player.getPlayerNumber());
+            String playerInfo = playerNumber + ". " + playerName;
+            dayInformation.append("Player ").append(playerInfo).append(" died.\n");
+        }
+
+        for (IPlayer player : participants)
+        {
+            if(player.getIsDead())
+            {
+                continue;
+            }
+            String playerName = player.getPlayerName();
+            String playerNumber = Integer.toString(player.getPlayerNumber());
+            String playerInfo = playerNumber + ". " + playerName;
+            dayInformation.append(playerInfo);
+        }
+        sendMessage(dayInformation.toString());
     }
 
     private void beginNightState()
     {
         currentState = GameState.NIGHT_MAFIA;
         sendMessage("It's night time! Go to bed. NOW!");
-    }
-
-    private void sendDayInformation()
-    {
-        StringBuilder dayInformation = new StringBuilder();
-        for (IPlayer player : dayDeadPlayers)
-        {
-            dayInformation.append("Player ").append(player.getPlayerName()).append(" died.\n");
-        }
-        dayInformation.append("There are: ").append(alivePlayers).append(" players alive!");
-        sendMessage(dayInformation.toString());
     }
 
     public void makeAVote(String playerNumber, String votingPlayerID)
@@ -204,6 +196,32 @@ public class Game
         }
     }
 
+    public void addParticipant(IPlayer participant)
+    {
+        participants.add(participant);
+        sendMessage("There are: " + participants.size() + " participants.");
+    }
+
+    public boolean isPlayerParticipant(String playerID)
+    {
+        Optional<IPlayer> player = getPlayerByID(playerID);
+        return player.filter(value -> participants.contains(value)).isPresent();
+    }
+
+    public GameState getCurrentGameState()
+    {
+        return currentState;
+    }
+
+    public int getCurrentPlayersCount()
+    {
+        return participants.size();
+    }
+
+    public void setMessageSender(IMessageSender messageSender)
+    {
+        this.messageSender = messageSender;
+    }
 
     private void sendMessage(String message)
     {
