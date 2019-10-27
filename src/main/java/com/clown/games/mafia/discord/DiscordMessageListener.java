@@ -18,7 +18,14 @@ public class DiscordMessageListener extends ListenerAdapter implements IMessageL
     @Override
     public void onPrivateMessageReceived(PrivateMessageReceivedEvent event)
     {
-        System.out.println(event);
+        if (event.getAuthor().isBot())
+        {
+            return;
+        }
+        String messageContent = event.getMessage().getContentRaw();
+
+        messageAuthor = event.getAuthor();
+        receiveMessage(messageContent);
     }
 
     @Override
