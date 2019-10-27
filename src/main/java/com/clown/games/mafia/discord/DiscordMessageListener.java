@@ -14,6 +14,13 @@ public class DiscordMessageListener extends ListenerAdapter implements IMessageL
     private Function<String, Boolean> receivingFunction;
     private TextChannel textChannel;
     private User messageAuthor;
+
+    @Override
+    public void onPrivateMessageReceived(PrivateMessageReceivedEvent event)
+    {
+        System.out.println(event);
+    }
+
     @Override
     public void onGuildMessageReceived(GuildMessageReceivedEvent event)
     {
