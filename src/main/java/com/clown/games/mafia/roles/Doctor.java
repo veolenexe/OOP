@@ -12,8 +12,9 @@ public class Doctor extends Role
     }
 
     @Override
-    public void makeMove(List<IPlayer> players)
+    public Move makeMove(List<IPlayer> players)
     {
 
+        return null;
     }
 }
