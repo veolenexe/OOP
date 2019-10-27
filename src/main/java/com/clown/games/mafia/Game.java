@@ -2,8 +2,8 @@ package com.clown.games.mafia;
 
 import com.clown.games.mafia.messaging.IMessageSender;
 import com.clown.games.mafia.player.IPlayer;
-import com.clown.games.mafia.player.Player;
 import com.clown.games.mafia.roles.*;
+import net.dv8tion.jda.internal.utils.tuple.Pair;
 
 import java.util.*;
 
@@ -11,6 +11,7 @@ import java.util.*;
 public class Game
 {
     private List<IPlayer> participants;
+    private List<Pair<Integer, IMove>> moves;
     private Map<String, Integer> votes;
     private int alivePlayers;
     private GameState currentState = GameState.OFFLINE;
@@ -20,6 +21,7 @@ public class Game
     public Game()
     {
         participants = new ArrayList<>();
+        moves = new ArrayList<>();
         votes = new HashMap<>();
     }
 
@@ -53,7 +55,31 @@ public class Game
             sendMessage("Now it's time to vote! Vote wisely...\n");
             sendMessage("Write '!Vote 1', to vote for first player, and so on...\n");
         }
+        dayCount++;
+    }
 
+    public void addMove(int movePriority, IMove move)
+    {
+        moves.add(Pair.of(movePriority, move));
+        moves.sort(Comparator.comparing(Pair::getLeft));
+        if(everyoneMadeMove())
+        {
+            actMoves();
+            beginDayState();
+        }
+    }
+
+    private boolean everyoneMadeMove()
+    {
+        return participants.stream().allMatch(IPlayer::getMadeMove);
+    }
+
+    private void actMoves()
+    {
+        for(Pair<Integer, IMove> move : moves)
+        {
+            move.getRight().act();
+        }
     }
 
     private void sendDayInformation()
@@ -61,16 +87,18 @@ public class Game
         StringBuilder dayInformation = new StringBuilder();
         dayInformation.append("There are: ").append(alivePlayers).append(" players alive!\n");
 
+        List<IPlayer> newParticipants = new ArrayList<>();
+
         for (IPlayer player : participants)
         {
-            if(!player.getIsDead())
+            if(player.getIsDead())
             {
-                continue;
+                alivePlayers--;
+                String playerName = player.getPlayerName();
+                String playerNumber = Integer.toString(player.getPlayerNumber());
+                String playerInfo = playerNumber + ". " + playerName;
+                dayInformation.append("Player ").append(playerInfo).append(" died.\n");
             }
-            String playerName = player.getPlayerName();
-            String playerNumber = Integer.toString(player.getPlayerNumber());
-            String playerInfo = playerNumber + ". " + playerName;
-            dayInformation.append("Player ").append(playerInfo).append(" died.\n");
         }
 
         for (IPlayer player : participants)
@@ -79,11 +107,13 @@ public class Game
             {
                 continue;
             }
+            newParticipants.add(player);
             String playerName = player.getPlayerName();
             String playerNumber = Integer.toString(player.getPlayerNumber());
             String playerInfo = playerNumber + ". " + playerName;
             dayInformation.append(playerInfo);
         }
+        participants = newParticipants;
         sendMessage(dayInformation.toString());
     }
 
@@ -95,11 +125,9 @@ public class Game
         {
             if (player.getRole()!=Roles.CITIZEN)
             {
-                player.sendPrivateMessage("chose player to make move");
+                player.sendPrivateMessage("choose player to make move");
                 player.sendPrivateMessage(formatToStringPlayerList());
-                player.makeMove(participants);
             }
-
         }
 
     }
@@ -175,14 +203,14 @@ public class Game
         return result.toString();
     }
 
-    private Optional<IPlayer> getPlayerByID(String playerID)
+    public Optional<IPlayer> getPlayerByID(String playerID)
     {
         return participants.stream()
                 .filter(player -> playerID.equals(player.getPlayerID()))
                 .findAny();
     }
 
-    private Optional<IPlayer> getPlayerByNumber(int playerNumber)
+    public Optional<IPlayer> getPlayerByNumber(int playerNumber)
     {
         return participants.stream()
                 .filter(player -> playerNumber == player.getPlayerNumber())

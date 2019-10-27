@@ -1,8 +1,7 @@
 package com.clown.games.mafia.roles;
 
+@FunctionalInterface
 public interface IMove
 {
-    int getPriority();
-    void setPriority(int priority);
     void act();
 }

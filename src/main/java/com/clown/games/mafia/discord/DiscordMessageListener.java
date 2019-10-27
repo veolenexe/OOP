@@ -23,8 +23,8 @@ public class DiscordMessageListener extends ListenerAdapter implements IMessageL
             return;
         }
         String messageContent = event.getMessage().getContentRaw();
-
         messageAuthor = event.getAuthor();
+        String d = "P: " + messageAuthor.getId() + " " + messageContent;
         receiveMessage(messageContent);
     }
 

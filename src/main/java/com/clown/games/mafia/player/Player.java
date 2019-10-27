@@ -1,5 +1,6 @@
 package com.clown.games.mafia.player;
 
+import com.clown.games.mafia.roles.IMove;
 import com.clown.games.mafia.roles.IRole;
 import com.clown.games.mafia.roles.Role;
 import com.clown.games.mafia.roles.Roles;
@@ -8,10 +9,10 @@ import java.util.List;
 
 public abstract class Player implements IPlayer
 {
-    protected IRole role;
+    private IRole role;
     private String playerID;
     private int playerNumber;
-    protected String playerName;
+    private String playerName;
     private boolean isDead;
     private boolean hasVoted;
     private String votedPlayerID;
@@ -62,14 +63,13 @@ public abstract class Player implements IPlayer
     @Override
     public String getVotedPlayerID()
     {
-        return getVotedPlayerID();
+        return votedPlayerID;
     }
 
     @Override
-    public void makeMove(List<IPlayer> players)
+    public IMove makeMove(IPlayer player)
     {
-
-        role.makeMove(players);
+        return role.makeMove(player);
     }
 
     @Override
@@ -94,5 +94,23 @@ public abstract class Player implements IPlayer
     public int getPlayerNumber()
     {
         return playerNumber;
+    }
+
+    @Override
+    public int getPlayerMovePriority()
+    {
+        return role.getPlayerMovePriority();
+    }
+
+    @Override
+    public boolean getMadeMove()
+    {
+        return role.getMadeMove();
+    }
+
+    @Override
+    public void setMadeMove(boolean madeMove)
+    {
+        role.setMadeMove(madeMove);
     }
 }

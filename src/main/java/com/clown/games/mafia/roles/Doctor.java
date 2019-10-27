@@ -6,15 +6,28 @@ import java.util.List;
 
 public class Doctor extends Role
 {
+    private static boolean madeMove = false;
+
     public Doctor()
     {
         role = Roles.DOCTOR;
     }
 
     @Override
-    public Move makeMove(List<IPlayer> players)
+    public IMove makeMove(IPlayer player)
     {
+        return () -> player.sendPrivateMessage("ТЫ ОЖИЛ");
+    }
 
-        return null;
+    @Override
+    public boolean getMadeMove()
+    {
+        return madeMove;
+    }
+
+    @Override
+    public void setMadeMove(boolean madeMove)
+    {
+        Doctor.madeMove = madeMove;
     }
 }

@@ -9,16 +9,28 @@ import java.util.function.Function;
 
 public class Mafia extends Role
 {
+    private static boolean madeMove = false;
+
     public Mafia()
     {
         role = Roles.MAFIA;
     }
 
     @Override
-    public Move makeMove(List<IPlayer> players)
+    public IMove makeMove(IPlayer player)
     {
-        players.get(0).sendPrivateMessage("aaa");
-        Move move = new Move();
-        return move;
+        return () -> player.sendPrivateMessage("ТЫ СДОХ");
+    }
+
+    @Override
+    public boolean getMadeMove()
+    {
+        return madeMove;
+    }
+
+    @Override
+    public void setMadeMove(boolean madeMove)
+    {
+        Mafia.madeMove = madeMove;
     }
 }
