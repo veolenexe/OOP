@@ -68,6 +68,7 @@ public abstract class Player implements IPlayer
     @Override
     public void makeMove(List<IPlayer> players)
     {
+
         role.makeMove(players);
     }
 

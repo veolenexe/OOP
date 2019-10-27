@@ -2,6 +2,7 @@ package com.clown.games.mafia;
 
 import com.clown.games.mafia.messaging.IMessageSender;
 import com.clown.games.mafia.player.IPlayer;
+import com.clown.games.mafia.player.Player;
 import com.clown.games.mafia.roles.*;
 
 import java.util.*;
@@ -88,8 +89,19 @@ public class Game
 
     private void beginNightState()
     {
-        currentState = GameState.NIGHT_MAFIA;
+        currentState = GameState.NIGHT;
         sendMessage("It's night time! Go to bed. NOW!");
+        for (IPlayer player:participants)
+        {
+            if (player.getRole()!=Roles.CITIZEN)
+            {
+                player.sendPrivateMessage("chose player to make move");
+                player.sendPrivateMessage(formatToStringPlayerList());
+                player.makeMove(participants);
+            }
+
+        }
+
     }
 
     public void makeAVote(String playerNumber, String votingPlayerID)
@@ -151,6 +163,16 @@ public class Game
         {
             beginNightState();
         }
+    }
+
+    private String formatToStringPlayerList()
+    {
+        StringBuilder result = new StringBuilder();
+        for (IPlayer player:participants)
+        {
+            result.append(player.getPlayerNumber()).append(". ").append(player.getPlayerName()).append("\n");
+        }
+        return result.toString();
     }
 
     private Optional<IPlayer> getPlayerByID(String playerID)

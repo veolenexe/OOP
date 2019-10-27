@@ -1,40 +1,31 @@
 package com.clown.games.mafia.discord;
 
 import com.clown.games.mafia.messaging.IMessageListener;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent;
 
+import javax.annotation.Nonnull;
 import java.util.function.Function;
 
-public class DiscordMessageListener extends ListenerAdapter implements IMessageListener
+public class DiscordPrivateMessageListener extends PrivateMessageReceivedEvent implements IMessageListener
 {
     private Function<String, Boolean> receivingFunction;
     private TextChannel textChannel;
     private User messageAuthor;
-    @Override
-    public void onGuildMessageReceived(GuildMessageReceivedEvent event)
-    {
-        if (event.getAuthor().isBot())
-        {
-            return;
-        }
-        String messageContent = event.getMessage().getContentRaw();
 
-        messageAuthor = event.getAuthor();
-        if ("!Mafia".equalsIgnoreCase(messageContent))
-        {
-            textChannel = event.getChannel();
-        }
-        receiveMessage(messageContent);
+    public DiscordPrivateMessageListener(@Nonnull JDA api, long responseNumber, @Nonnull Message message)
+    {
+        super(api, responseNumber, message);
     }
+
 
     @Override
     public void receiveMessage(String message)
     {
-        receivingFunction.apply(message);
+        System.out.println(message);
     }
 
     @Override

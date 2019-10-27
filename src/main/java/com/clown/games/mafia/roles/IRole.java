@@ -6,6 +6,6 @@ import java.util.List;
 
 public interface IRole
 {
-    void makeMove(List<IPlayer> players);
+    Move makeMove(List<IPlayer> players);
     Roles getRole();
 }

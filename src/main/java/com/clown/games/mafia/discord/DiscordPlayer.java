@@ -1,6 +1,8 @@
 package com.clown.games.mafia.discord;
 
+import com.clown.games.mafia.player.IPlayer;
 import com.clown.games.mafia.player.Player;
+import com.clown.games.mafia.roles.Citizen;
 import net.dv8tion.jda.api.entities.User;
 
 import java.util.List;
@@ -22,5 +24,11 @@ public class DiscordPlayer extends Player
         {
             channel.sendMessage(message).queue();
         });
+    }
+
+    @Override
+    public void makeMove(List<IPlayer> players)
+    {
+        super.makeMove(players);
     }
 }
