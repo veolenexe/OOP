@@ -62,7 +62,7 @@ public class Game
     {
         moves.add(Pair.of(movePriority, move));
         moves.sort(Comparator.comparing(Pair::getLeft));
-        if(everyoneMadeMove())
+        if (everyoneMadeMove())
         {
             actMoves();
             beginDayState();
@@ -76,7 +76,7 @@ public class Game
 
     private void actMoves()
     {
-        for(Pair<Integer, IMove> move : moves)
+        for (Pair<Integer, IMove> move : moves)
         {
             move.getRight().act();
         }
@@ -91,7 +91,7 @@ public class Game
 
         for (IPlayer player : participants)
         {
-            if(player.getIsDead())
+            if (player.getIsDead())
             {
                 alivePlayers--;
                 String playerName = player.getPlayerName();
@@ -103,7 +103,7 @@ public class Game
 
         for (IPlayer player : participants)
         {
-            if(player.getIsDead())
+            if (player.getIsDead())
             {
                 continue;
             }
@@ -121,9 +121,9 @@ public class Game
     {
         currentState = GameState.NIGHT;
         sendMessage("It's night time! Go to bed. NOW!");
-        for (IPlayer player:participants)
+        for (IPlayer player : participants)
         {
-            if (player.getRole()!=Roles.CITIZEN)
+            if (player.getRole() != Roles.CITIZEN)
             {
                 player.sendPrivateMessage("choose player to make move");
                 player.sendPrivateMessage(formatToStringPlayerList());
@@ -196,7 +196,7 @@ public class Game
     private String formatToStringPlayerList()
     {
         StringBuilder result = new StringBuilder();
-        for (IPlayer player:participants)
+        for (IPlayer player : participants)
         {
             result.append(player.getPlayerNumber()).append(". ").append(player.getPlayerName()).append("\n");
         }
@@ -236,7 +236,7 @@ public class Game
         }
         participants.get(doctorIndex).setRole(Roles.DOCTOR);
         participants.get(detectiveIndex).setRole(Roles.DETECTIVE);
-        for (int i = citizenIndex; i< playerCount; i++)
+        for (int i = citizenIndex; i < playerCount; i++)
         {
             participants.get(i).setRole(Roles.CITIZEN);
         }

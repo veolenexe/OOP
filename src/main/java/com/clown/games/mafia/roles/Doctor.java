@@ -2,21 +2,20 @@ package com.clown.games.mafia.roles;
 
 import com.clown.games.mafia.player.IPlayer;
 
-import java.util.List;
-
 public class Doctor extends Role
 {
     private static boolean madeMove = false;
 
-    public Doctor()
+    Doctor()
     {
+        playerMovePriority = 2;
         role = Roles.DOCTOR;
     }
 
     @Override
     public IMove makeMove(IPlayer player)
     {
-        return () -> player.sendPrivateMessage("ТЫ ОЖИЛ");
+        return () -> player.setIsDead(false);
     }
 
     @Override

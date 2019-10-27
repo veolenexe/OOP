@@ -2,13 +2,11 @@ package com.clown.games.mafia.roles;
 
 import com.clown.games.mafia.player.IPlayer;
 
-import java.util.List;
-
 public class Citizen extends Role
 {
-    private static boolean madeMove = false;
+    private static boolean madeMove = true;
 
-    public Citizen()
+    Citizen()
     {
         role = Roles.CITIZEN;
     }

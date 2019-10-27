@@ -5,8 +5,6 @@ import com.clown.games.mafia.roles.IRole;
 import com.clown.games.mafia.roles.Role;
 import com.clown.games.mafia.roles.Roles;
 
-import java.util.List;
-
 public abstract class Player implements IPlayer
 {
     private IRole role;

@@ -6,8 +6,6 @@ import com.clown.games.mafia.player.IPlayer;
 import com.clown.games.mafia.roles.IMove;
 import net.dv8tion.jda.api.entities.User;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 public class DiscordMafiaBot
@@ -17,7 +15,7 @@ public class DiscordMafiaBot
     private DiscordMessageListener messageListener;
 
     public DiscordMafiaBot(DiscordMessageSender messageSender,
-                    DiscordMessageListener messageListener)
+                           DiscordMessageListener messageListener)
     {
         this.messageSender = messageSender;
         this.messageListener = messageListener;
@@ -86,7 +84,7 @@ public class DiscordMafiaBot
             }
             case NIGHT:
             {
-                if(message.startsWith("P:"))
+                if (message.startsWith("P:"))
                 {
                     String[] messageData = message.substring(2).split(" ");
 
@@ -94,12 +92,12 @@ public class DiscordMafiaBot
                     int playerNumberToMakeMoveOn = Integer.parseInt(messageData[1]);
                     Optional<IPlayer> playerOptional = game.getPlayerByID(playerId);
                     Optional<IPlayer> playerToMakeMoveOnOptional = game.getPlayerByNumber(playerNumberToMakeMoveOn);
-                    if(playerOptional.isPresent())
+                    if (playerOptional.isPresent())
                     {
                         IPlayer player = playerOptional.get();
-                        if(playerToMakeMoveOnOptional.isPresent())
+                        if (playerToMakeMoveOnOptional.isPresent())
                         {
-                            if(player.getMadeMove())
+                            if (player.getMadeMove())
                             {
                                 player.sendPrivateMessage("You cannot move twice!");
                                 return;

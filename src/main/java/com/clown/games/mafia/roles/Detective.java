@@ -2,14 +2,13 @@ package com.clown.games.mafia.roles;
 
 import com.clown.games.mafia.player.IPlayer;
 
-import java.util.List;
-
 public class Detective extends Role
 {
     private static boolean madeMove = false;
 
-    public Detective()
+    Detective()
     {
+        playerMovePriority = 3;
         role = Roles.DETECTIVE;
     }
 

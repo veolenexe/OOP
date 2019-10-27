@@ -3,8 +3,6 @@ package com.clown.games.mafia.player;
 import com.clown.games.mafia.roles.IMove;
 import com.clown.games.mafia.roles.Roles;
 
-import java.util.List;
-
 public interface IPlayer
 {
     Roles getRole();

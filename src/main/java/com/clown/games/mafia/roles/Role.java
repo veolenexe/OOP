@@ -3,7 +3,7 @@ package com.clown.games.mafia.roles;
 public abstract class Role implements IRole
 {
     Roles role;
-    private int playerMovePriority;
+    int playerMovePriority;
 
     public Roles getRole()
     {

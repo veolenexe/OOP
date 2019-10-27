@@ -1,6 +1,5 @@
 package com.clown.games.mafia.messaging;
 
-import javax.swing.*;
 import java.util.function.Function;
 
 public interface IMessageListener
