@@ -1,5 +1,7 @@
 package com.clown.games.mafia;
 
+import com.clown.games.mafia.fsm.FSM;
+import com.clown.games.mafia.fsm.IFSM;
 import com.clown.games.mafia.messaging.IMessageSender;
 import com.clown.games.mafia.player.IPlayer;
 import com.clown.games.mafia.roles.*;
@@ -13,16 +15,19 @@ public class Game
     private List<IPlayer> participants;
     private List<Pair<Integer, IMove>> moves;
     private Map<String, Integer> votes;
+    private int mafiaCount;
     private int alivePlayers;
     private GameState currentState = GameState.OFFLINE;
     private IMessageSender messageSender;
     private int dayCount;
+    private IFSM fsm;
 
     public Game()
     {
         participants = new ArrayList<>();
         moves = new ArrayList<>();
         votes = new HashMap<>();
+        fsm = new FSM();
     }
 
     public void prepareForGame()
@@ -36,7 +41,10 @@ public class Game
     {
         sendMessage("игра началась!");
         shuffleRoles();
-        beginDayState();
+        while (isGameActive())
+        {
+            fsm.update();
+        }
     }
 
     private void beginDayState()
@@ -65,7 +73,7 @@ public class Game
         if (everyoneMadeMove())
         {
             actMoves();
-            beginDayState();
+            fsm.setState(this::beginDayState);
         }
     }
 
@@ -94,6 +102,10 @@ public class Game
             if (player.getIsDead())
             {
                 alivePlayers--;
+                if (player.getRole()==Roles.MAFIA)
+                {
+                    mafiaCount--;
+                }
                 String playerName = player.getPlayerName();
                 String playerNumber = Integer.toString(player.getPlayerNumber());
                 String playerInfo = playerNumber + ". " + playerName;
@@ -132,7 +144,7 @@ public class Game
 
     }
 
-    public void makeAVote(String playerNumber, String votingPlayerID)
+    public void makeAVote(String playersVote, String votingPlayerID)
     {
         Optional<IPlayer> votingPlayerOptional = getPlayerByID(votingPlayerID);
         if (votingPlayerOptional.isEmpty())
@@ -141,25 +153,20 @@ public class Game
         }
         IPlayer votingPlayer = votingPlayerOptional.get();
 
-        int playerNumberToVote;
+        if (IsWrongVote(playersVote))
+        {
+            sendMessage("Dear, " + votingPlayerID + " you wrote wrong vote");
+            return;
+        }
 
-        try
+        if (playersVote.equals("pass"))
         {
-            playerNumberToVote = Integer.parseInt(playerNumber);
+            votingPlayer.setHasVoted(true);
+            votingPlayer.setVotedPlayerID("pass");
+            return;
         }
-        catch (NumberFormatException e)
-        {
-            if (playerNumber.equals("pass"))
-            {
-                votingPlayer.setHasVoted(true);
-                votingPlayer.setVotedPlayerID("pass");
-                return;
-            }
-            else
-            {
-                throw new IllegalArgumentException("Wrong player number!");
-            }
-        }
+
+        int playerNumberToVote = Integer.parseInt(playersVote);
 
         Optional<IPlayer> playerOptional = getPlayerByNumber(playerNumberToVote);
 
@@ -189,7 +196,21 @@ public class Game
         votingPlayer.setVotedPlayerID(votedPlayerID);
         if (everyoneHasVoted())
         {
-            beginNightState();
+            fsm.setState(this::beginNightState);
+        }
+    }
+
+    private Boolean IsWrongVote(String playersVote)
+    {
+        int playerNumberToVote;
+        try
+        {
+            playerNumberToVote = Integer.parseInt(playersVote);
+            return getPlayerByNumber(playerNumberToVote).isEmpty();
+        }
+        catch (NumberFormatException e)
+        {
+            return !playersVote.equals("pass");
         }
     }
 
@@ -225,7 +246,7 @@ public class Game
     private void shuffleRoles()
     {
         int playerCount = getCurrentPlayersCount();
-        int mafiaCount = playerCount / 4;
+        mafiaCount = playerCount / 4;
         int doctorIndex = mafiaCount;
         int detectiveIndex = mafiaCount + 1;
         int citizenIndex = mafiaCount + 2;
@@ -273,6 +294,10 @@ public class Game
         this.messageSender = messageSender;
     }
 
+    private boolean isGameActive()
+    {
+        return alivePlayers/2 > mafiaCount;
+    }
     private void sendMessage(String message)
     {
         messageSender.sendMessage(message);

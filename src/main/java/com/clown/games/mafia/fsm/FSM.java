@@ -1,6 +1,6 @@
-package com.clown.games.mafia.fms;
+package com.clown.games.mafia.fsm;
 
-public abstract class FMS implements IFMS
+public class FSM implements IFSM
 {
     private IState activeState;
     public void setState(IState state)
