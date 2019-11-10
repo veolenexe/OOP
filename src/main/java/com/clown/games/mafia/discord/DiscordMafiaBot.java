@@ -46,15 +46,16 @@ public class DiscordMafiaBot
         if ("!Mafia".equalsIgnoreCase(message))
         {
             beginMafiaInASeparateChannel(channelId);
-        }
-
-        if ("!help".equalsIgnoreCase(message))
-        {
-            printHelp();
+            return;
         }
 
         Game game = games.get(channelId);
         User user = messageListener.getMessageAuthor();
+
+        if ("!help".equalsIgnoreCase(message))
+        {
+            printHelp(game);
+        }
 
         handleCommands(message, game, user);
     }
@@ -118,7 +119,7 @@ public class DiscordMafiaBot
     {
         if (game.getCurrentPlayersCount() < 5)
         {
-            messageSender.sendMessage("недостаточное кол-во игроков," +
+            game.sendMessage("недостаточное кол-во игроков," +
                     " необходимо 5 или больше людей в игре: " +
                     game.getCurrentPlayersCount());
         }
@@ -166,13 +167,13 @@ public class DiscordMafiaBot
         }
         else
         {
-            messageSender.sendMessage("How could this happen?");
+            game.sendMessage("How could this happen?");
         }
     }
 
-    private void printHelp()
+    private void printHelp(Game game)
     {
-        messageSender.sendMessage("No one will help you!");
+        game.sendMessage("No one will help you!");
     }
 
     public IMessageListener getMessageListener()
