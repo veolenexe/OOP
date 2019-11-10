@@ -7,7 +7,8 @@ public interface IPlayer
 {
     Roles getRole();
     void setRole(Roles role);
-    boolean getIsDead();
+    boolean isDead();
+    boolean isAlive();
     void setIsDead(boolean isDead);
     boolean getHasVoted();
     void setHasVoted(boolean hasVoted);

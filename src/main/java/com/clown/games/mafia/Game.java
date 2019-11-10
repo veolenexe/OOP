@@ -50,6 +50,7 @@ public class Game
     private void beginDayState()
     {
         currentState = GameState.DAY;
+        refreshVote();
         if (dayCount == 0)
         {
             sendMessage("Welcome - citizens! Greet each other!");
@@ -66,6 +67,17 @@ public class Game
         dayCount++;
     }
 
+    private void refreshVote()
+    {
+        votes = new HashMap<>();
+        for (IPlayer player: participants)
+        {
+            if(player.isAlive())
+            {
+                votes.put(player.getPlayerID(), 0);
+            }
+        }
+    }
     public void addMove(int movePriority, IMove move)
     {
         moves.add(Pair.of(movePriority, move));
@@ -99,7 +111,7 @@ public class Game
 
         for (IPlayer player : participants)
         {
-            if (player.getIsDead())
+            if (player.isDead())
             {
                 alivePlayers--;
                 if (player.getRole()==Roles.MAFIA)
@@ -115,7 +127,7 @@ public class Game
 
         for (IPlayer player : participants)
         {
-            if (player.getIsDead())
+            if (player.isDead())
             {
                 continue;
             }
@@ -141,7 +153,6 @@ public class Game
                 player.sendPrivateMessage(formatToStringPlayerList());
             }
         }
-
     }
 
     public void makeAVote(String playersVote, String votingPlayerID)
@@ -168,14 +179,7 @@ public class Game
 
         int playerNumberToVote = Integer.parseInt(playersVote);
 
-        Optional<IPlayer> playerOptional = getPlayerByNumber(playerNumberToVote);
-
-        if (playerOptional.isEmpty())
-        {
-            throw new IllegalArgumentException("Wrong player number!");
-        }
-
-        IPlayer votedPlayer = playerOptional.get();
+        IPlayer votedPlayer = getPlayerByNumber(playerNumberToVote).get();// наличие игрока проверяется в isWrongVote
         String votedPlayerID = votedPlayer.getVotedPlayerID();
 
         if (votingPlayer.getHasVoted() && votingPlayer.getVotedPlayerID().equals(votedPlayerID))
@@ -184,14 +188,7 @@ public class Game
             return;
         }
 
-        if (votes.containsKey(votedPlayerID))
-        {
-            votes.replace(votedPlayerID, votes.get(votedPlayerID) + 1);
-        }
-        else
-        {
-            votes.put(votedPlayerID, 1);
-        }
+        votes.replace(votedPlayerID, votes.get(votedPlayerID) + 1);
         votingPlayer.setHasVoted(true);
         votingPlayer.setVotedPlayerID(votedPlayerID);
         if (everyoneHasVoted())
@@ -206,6 +203,7 @@ public class Game
         try
         {
             playerNumberToVote = Integer.parseInt(playersVote);
+
             return getPlayerByNumber(playerNumberToVote).isEmpty();
         }
         catch (NumberFormatException e)
@@ -298,7 +296,7 @@ public class Game
     {
         return alivePlayers/2 > mafiaCount;
     }
-    private void sendMessage(String message)
+    public void sendMessage(String message)
     {
         messageSender.sendMessage(message);
     }

@@ -35,11 +35,16 @@ public abstract class Player implements IPlayer
     }
 
     @Override
-    public boolean getIsDead()
+    public boolean isDead()
     {
         return isDead;
     }
 
+    @Override
+    public boolean isAlive()
+    {
+        return !isDead;
+    }
     @Override
     public void setIsDead(boolean isDead)
     {
