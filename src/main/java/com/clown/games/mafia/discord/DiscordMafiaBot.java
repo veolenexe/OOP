@@ -1,16 +1,21 @@
 package com.clown.games.mafia.discord;
 
 import com.clown.games.mafia.Game;
+import com.clown.games.mafia.ICommand;
 import com.clown.games.mafia.messaging.IMessageListener;
 import com.clown.games.mafia.player.IPlayer;
 import com.clown.games.mafia.roles.IMove;
 import net.dv8tion.jda.api.entities.User;
 
+import java.util.HashMap;
 import java.util.Optional;
 
 public class DiscordMafiaBot
 {
-    private Game game;
+    private HashMap<String, Game> games;
+    private HashMap<String, ICommand> preparationCommandHandlers;
+    private HashMap<String, ICommand> dayCommandHandlers;
+    private HashMap<String, ICommand> nightCommandHandlers;
     private DiscordMessageSender messageSender;
     private DiscordMessageListener messageListener;
 
@@ -24,61 +29,50 @@ public class DiscordMafiaBot
             onMessageReceived(message);
             return true;
         });
-        game = new Game();
-        game.setMessageSender(messageSender);
+        games = new HashMap<>();
+        preparationCommandHandlers = new HashMap<>();
+        preparationCommandHandlers.put("!join mafia", this::handleJoinMafia);
+        preparationCommandHandlers.put("!Mafia start", this::handleMafiaStart);
+        dayCommandHandlers = new HashMap<>();
+        dayCommandHandlers.put("!vote", this::handleVote);
+        nightCommandHandlers = new HashMap<>();
+        nightCommandHandlers.put("P:", this::handlePrivateMessage);
     }
 
     private void onMessageReceived(String message)
     {
-        if ("!help".equals(message))
+        String channelId = messageListener.getTextChannel().getId();
+
+        if ("!Mafia".equalsIgnoreCase(message))
+        {
+            beginMafiaInASeparateChannel(channelId);
+        }
+
+        if ("!help".equalsIgnoreCase(message))
         {
             printHelp();
         }
-        if ("!Mafia".equalsIgnoreCase(message))
-        {
-            messageSender.setTextChannel(messageListener.getTextChannel());
-            game.prepareForGame();
-        }
+
+        Game game = games.get(channelId);
         User user = messageListener.getMessageAuthor();
+
+        handleCommands(message, game, user);
+    }
+
+    private void handleCommands(String message, Game game, User user)
+    {
         switch (game.getCurrentGameState())
         {
             case PREPARATION:
             {
-                switch (message)
-                {
-                    case "!join mafia":
-                    {
-                        if (!game.isPlayerParticipant(user.getId()))//Убрать для теста.
-                        {
-                            IPlayer newPlayer = new DiscordPlayer(user, game.getCurrentPlayersCount() + 1);
-                            game.addParticipant(newPlayer);
-                        }
-                        break;
-                    }
-                    case "!Mafia start":
-                    {
-                        if (game.getCurrentPlayersCount() < 5)
-                        {
-                            messageSender.sendMessage("недостаточное кол-во игроков," +
-                                    " необходимо 5 или больше людей в игре: " +
-                                    game.getCurrentPlayersCount());
-                        }
-                        else
-                        {
-                            game.startGame();
-                        }
-                        break;
-                    }
-                }
+                preparationCommandHandlers.get(message).handleCommand(message, game, user);
                 break;
             }
             case DAY:
             {
                 if (message.startsWith("!vote "))
                 {
-                    String playerNumber = message.substring(7, 8);
-                    String votedPlayerId = user.getId();
-                    game.makeAVote(playerNumber, votedPlayerId);
+                    dayCommandHandlers.get("!vote").handleCommand(message, game, user);
                 }
                 break;
             }
@@ -86,40 +80,93 @@ public class DiscordMafiaBot
             {
                 if (message.startsWith("P:"))
                 {
-                    String[] messageData = message.substring(2).split(" ");
-
-                    String playerId = messageData[0];
-                    int playerNumberToMakeMoveOn = Integer.parseInt(messageData[1]);
-                    Optional<IPlayer> playerOptional = game.getPlayerByID(playerId);
-                    Optional<IPlayer> playerToMakeMoveOnOptional = game.getPlayerByNumber(playerNumberToMakeMoveOn);
-                    if (playerOptional.isPresent())
-                    {
-                        IPlayer player = playerOptional.get();
-                        if (playerToMakeMoveOnOptional.isPresent())
-                        {
-                            if (player.getMadeMove())
-                            {
-                                player.sendPrivateMessage("You cannot move twice!");
-                                return;
-                            }
-                            IPlayer playerToMakeMoveOn = playerToMakeMoveOnOptional.get();
-                            IMove move = player.makeMove(playerToMakeMoveOn);
-                            player.setMadeMove(true);
-                            game.addMove(player.getPlayerMovePriority(), move);
-                        }
-                        else
-                        {
-                            player.sendPrivateMessage("Wrong player number");
-                        }
-
-                    }
-                    else
-                    {
-                        messageSender.sendMessage("How could this happen?");
-                    }
+                    nightCommandHandlers.get("P:").handleCommand(message, game, user);
                 }
                 break;
             }
+        }
+    }
+
+    private void beginMafiaInASeparateChannel(String channelId)
+    {
+        Game game;
+        if(games.containsKey(channelId))
+        {
+            game = games.get(channelId);
+        }
+        else
+        {
+            game = new Game();
+            games.put(channelId, game);
+        }
+        DiscordMessageSender gameMessageSender = new DiscordMessageSender();
+        gameMessageSender.setTextChannel(messageListener.getTextChannel());
+        game.setMessageSender(gameMessageSender);
+        game.prepareForGame();
+    }
+    
+    private void handleJoinMafia(String message, Game game, User user)
+    {
+        if (!game.isPlayerParticipant(user.getId()))//Убрать для теста.
+        {
+            IPlayer newPlayer = new DiscordPlayer(user, game.getCurrentPlayersCount() + 1);
+            game.addParticipant(newPlayer);
+        }
+    }
+
+    private void handleMafiaStart(String message, Game game, User user)
+    {
+        if (game.getCurrentPlayersCount() < 5)
+        {
+            messageSender.sendMessage("недостаточное кол-во игроков," +
+                    " необходимо 5 или больше людей в игре: " +
+                    game.getCurrentPlayersCount());
+        }
+        else
+        {
+            game.startGame();
+        }
+    }
+
+    private void handleVote(String message, Game game, User user)
+    {
+        String playerNumber = message.substring(7, 8);
+        String votedPlayerId = user.getId();
+        game.makeAVote(playerNumber, votedPlayerId);
+    }
+
+    private void handlePrivateMessage(String message, Game game, User user)
+    {
+        String[] messageData = message.substring(2).split(" ");
+
+        String playerId = messageData[0];
+        int playerNumberToMakeMoveOn = Integer.parseInt(messageData[1]);
+        Optional<IPlayer> playerOptional = game.getPlayerByID(playerId);
+        Optional<IPlayer> playerToMakeMoveOnOptional = game.getPlayerByNumber(playerNumberToMakeMoveOn);
+        if (playerOptional.isPresent())
+        {
+            IPlayer player = playerOptional.get();
+            if (playerToMakeMoveOnOptional.isPresent())
+            {
+                if (player.getMadeMove())
+                {
+                    player.sendPrivateMessage("You cannot move twice!");
+                    return;
+                }
+                IPlayer playerToMakeMoveOn = playerToMakeMoveOnOptional.get();
+                IMove move = player.makeMove(playerToMakeMoveOn);
+                player.setMadeMove(true);
+                game.addMove(player.getPlayerMovePriority(), move);
+            }
+            else
+            {
+                player.sendPrivateMessage("Wrong player number");
+            }
+
+        }
+        else
+        {
+            messageSender.sendMessage("How could this happen?");
         }
     }
 
