@@ -15,9 +15,8 @@ public class Main
         JDABuilder builder = new JDABuilder(AccountType.BOT);
         String token = "";
         builder.setToken(token);
-        DiscordMessageSender discordMessageSender = new DiscordMessageSender();
         DiscordMessageListener discordMessageListener = new DiscordMessageListener();
-        DiscordMafiaBot discordMafiaBot = new DiscordMafiaBot(discordMessageSender, discordMessageListener);
+        DiscordMafiaBot discordMafiaBot = new DiscordMafiaBot(discordMessageListener);
         builder.addEventListeners(discordMafiaBot.getMessageListener());
         builder.build();
     }

@@ -16,13 +16,10 @@ public class DiscordMafiaBot
     private HashMap<String, ICommand> preparationCommandHandlers;
     private HashMap<String, ICommand> dayCommandHandlers;
     private HashMap<String, ICommand> nightCommandHandlers;
-    private DiscordMessageSender messageSender;
     private DiscordMessageListener messageListener;
 
-    public DiscordMafiaBot(DiscordMessageSender messageSender,
-                           DiscordMessageListener messageListener)
+    public DiscordMafiaBot(DiscordMessageListener messageListener)
     {
-        this.messageSender = messageSender;
         this.messageListener = messageListener;
         messageListener.setReceivingFunction(message ->
         {
