@@ -244,17 +244,17 @@ public class Game
     private void shuffleRoles()
     {
         int playerCount = getCurrentPlayersCount();
-        mafiaCount = playerCount / 4;
+        mafiaCount = playerCount / 2; // 4
         int doctorIndex = mafiaCount;
         int detectiveIndex = mafiaCount + 1;
-        int citizenIndex = mafiaCount + 2;
+        int citizenIndex = mafiaCount; // + 2
         Collections.shuffle(participants);
         for (int i = 0; i < mafiaCount; i++)
         {
             participants.get(i).setRole(Roles.MAFIA);
         }
-        participants.get(doctorIndex).setRole(Roles.DOCTOR);
-        participants.get(detectiveIndex).setRole(Roles.DETECTIVE);
+        //participants.get(doctorIndex).setRole(Roles.DOCTOR);
+        //participants.get(detectiveIndex).setRole(Roles.DETECTIVE);
         for (int i = citizenIndex; i < playerCount; i++)
         {
             participants.get(i).setRole(Roles.CITIZEN);
@@ -294,8 +294,9 @@ public class Game
 
     private boolean isGameActive()
     {
-        return alivePlayers/2 > mafiaCount;
+        return true;
     }
+
     public void sendMessage(String message)
     {
         messageSender.sendMessage(message);
