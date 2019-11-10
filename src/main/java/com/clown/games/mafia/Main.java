@@ -13,7 +13,7 @@ public class Main
     public static void main(String[] args) throws LoginException
     {
         JDABuilder builder = new JDABuilder(AccountType.BOT);
-        String token = "NjI3Nzg5NTkwMzI5MTYzNzc2.XbWl5A._-OprS9cwg0ep3KwRo9Ir_HEPyk";
+        String token = "";
         builder.setToken(token);
         DiscordMessageListener discordMessageListener = new DiscordMessageListener();
         DiscordMafiaBot discordMafiaBot = new DiscordMafiaBot(discordMessageListener);
