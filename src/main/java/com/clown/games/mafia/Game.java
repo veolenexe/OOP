@@ -41,7 +41,13 @@ public class Game
     {
         sendMessage("игра началась!");
         shuffleRoles();
-        while (isGameActive())
+        fsm.setState(this::beginDayState);
+        update();
+    }
+
+    private void update()
+    {
+        if(isGameActive())
         {
             fsm.update();
         }
@@ -50,12 +56,14 @@ public class Game
     private void beginDayState()
     {
         currentState = GameState.DAY;
-        refreshVote();
+        refreshStats();
         if (dayCount == 0)
         {
             sendMessage("Welcome - citizens! Greet each other!");
             alivePlayers = getCurrentPlayersCount();
             sendMessage("Write !Mafia night to begin the game!");
+            fsm.setState(this::beginNightState);
+            update();
         }
         else
         {
@@ -67,7 +75,7 @@ public class Game
         dayCount++;
     }
 
-    private void refreshVote()
+    private void refreshStats()
     {
         votes = new HashMap<>();
         for (IPlayer player: participants)
@@ -75,6 +83,11 @@ public class Game
             if(player.isAlive())
             {
                 votes.put(player.getPlayerID(), 0);
+                player.setHasVoted(false);
+                if(player.getRole()!=Roles.CITIZEN)
+                {
+                    player.setMadeMove(false);
+                }
             }
         }
     }
@@ -86,6 +99,7 @@ public class Game
         {
             actMoves();
             fsm.setState(this::beginDayState);
+            update();
         }
     }
 
@@ -105,7 +119,7 @@ public class Game
     private void sendDayInformation()
     {
         StringBuilder dayInformation = new StringBuilder();
-        dayInformation.append("There are: ").append(alivePlayers).append(" players alive!\n");
+
 
         List<IPlayer> newParticipants = new ArrayList<>();
 
@@ -124,6 +138,7 @@ public class Game
                 dayInformation.append("Player ").append(playerInfo).append(" died.\n");
             }
         }
+        dayInformation.append("There are: ").append(alivePlayers).append(" players alive!\n");
 
         for (IPlayer player : participants)
         {
@@ -160,13 +175,13 @@ public class Game
         Optional<IPlayer> votingPlayerOptional = getPlayerByID(votingPlayerID);
         if (votingPlayerOptional.isEmpty())
         {
-            throw new IllegalArgumentException("Wrong player name!");
+            return;
         }
         IPlayer votingPlayer = votingPlayerOptional.get();
 
         if (IsWrongVote(playersVote))
         {
-            sendMessage("Dear, " + votingPlayerID + " you wrote wrong vote");
+            sendMessage("Dear, " + votingPlayer.getPlayerName() + " you wrote wrong vote");
             return;
         }
 
@@ -180,11 +195,11 @@ public class Game
         int playerNumberToVote = Integer.parseInt(playersVote);
 
         IPlayer votedPlayer = getPlayerByNumber(playerNumberToVote).get();// наличие игрока проверяется в isWrongVote
-        String votedPlayerID = votedPlayer.getVotedPlayerID();
+        String votedPlayerID = votedPlayer.getPlayerID();
 
         if (votingPlayer.getHasVoted() && votingPlayer.getVotedPlayerID().equals(votedPlayerID))
         {
-            sendMessage("Dear, " + votingPlayerID + " you cannot vote twice!");
+            sendMessage("Dear, " + votedPlayer.getPlayerName() + " you cannot vote twice!");
             return;
         }
 
@@ -194,6 +209,7 @@ public class Game
         if (everyoneHasVoted())
         {
             fsm.setState(this::beginNightState);
+            update();
         }
     }
 

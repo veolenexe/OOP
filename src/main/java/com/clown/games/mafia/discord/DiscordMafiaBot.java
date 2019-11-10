@@ -114,7 +114,7 @@ public class DiscordMafiaBot
 
     private void handleMafiaStart(String message, Game game, User user)
     {
-        if (game.getCurrentPlayersCount() < 5)
+        if (game.getCurrentPlayersCount() < 1)
         {
             game.sendMessage("недостаточное кол-во игроков," +
                     " необходимо 5 или больше людей в игре: " +
@@ -128,14 +128,14 @@ public class DiscordMafiaBot
 
     private void handleVote(String message, Game game, User user)
     {
-        String playerNumber = message.substring(7, 8);
+        String playerNumber = message.split(" ")[1];
         String votedPlayerId = user.getId();
         game.makeAVote(playerNumber, votedPlayerId);
     }
 
     private void handlePrivateMessage(String message, Game game, User user)
     {
-        String[] messageData = message.substring(2).split(" ");
+        String[] messageData = message.substring(3).split(" ");
 
         String playerId = messageData[0];
         int playerNumberToMakeMoveOn = Integer.parseInt(messageData[1]);
