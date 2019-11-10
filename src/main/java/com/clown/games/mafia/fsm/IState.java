@@ -1,4 +1,4 @@
-package com.clown.games.mafia.fms;
+package com.clown.games.mafia.fsm;
 
 public interface IState
 {

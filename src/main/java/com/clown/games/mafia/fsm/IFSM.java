@@ -1,6 +1,6 @@
-package com.clown.games.mafia.fms;
+package com.clown.games.mafia.fsm;
 
-public interface IFMS
+public interface IFSM
 {
     void setState(IState state);
 
