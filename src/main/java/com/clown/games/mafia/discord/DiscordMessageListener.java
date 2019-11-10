@@ -38,10 +38,7 @@ public class DiscordMessageListener extends ListenerAdapter implements IMessageL
         String messageContent = event.getMessage().getContentRaw();
 
         messageAuthor = event.getAuthor();
-        if ("!Mafia".equalsIgnoreCase(messageContent))
-        {
-            textChannel = event.getChannel();
-        }
+        textChannel = event.getChannel();
         receiveMessage(messageContent);
     }
 
