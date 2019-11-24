@@ -14,7 +14,7 @@ public class Citizen extends Role
     @Override
     public IMove makeMove(IPlayer player)
     {
-        return null;
+        return () -> madeMove = true;
     }
 
     @Override

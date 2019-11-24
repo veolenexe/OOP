@@ -2,7 +2,6 @@ package com.clown.games.mafia;
 
 import com.clown.games.mafia.discord.DiscordMafiaBot;
 import com.clown.games.mafia.discord.DiscordMessageListener;
-import com.clown.games.mafia.discord.DiscordMessageSender;
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDABuilder;
 
