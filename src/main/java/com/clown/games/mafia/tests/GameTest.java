@@ -3,8 +3,8 @@ package com.clown.games.mafia.tests;
 import com.clown.games.mafia.Game;
 import com.clown.games.mafia.GameState;
 import com.clown.games.mafia.IGame;
-import  com.clown.games.mafia.tests.testClasses.TestPlayer;
-import  com.clown.games.mafia.tests.testClasses.TestMessageSender;
+import com.clown.games.mafia.tests.testClasses.TestPlayer;
+import com.clown.games.mafia.tests.testClasses.TestMessageSender;
 import org.junit.Assert;
 
 public class GameTest {
@@ -19,7 +19,7 @@ public class GameTest {
         game = new Game();
         sender = new TestMessageSender();
         game.setMessageSender(sender);
-        testPlayer = new TestPlayer("Gordon Freeman", "lolid", 1);
+        testPlayer = new TestPlayer("Gordon Freeman", "id", 1);
     }
 
     @org.junit.Test
@@ -37,10 +37,37 @@ public class GameTest {
     }
 
     @org.junit.Test
+    public void startGame_should_sendPlayersTheirRoles()
+    {
+        game.startGame();
+        Assert.assertTrue(testPlayer.getLastPrivateMessage().contains("Your role is"));
+    }
+
+    @org.junit.Test
     public void makeAVote_should_sendMessageOnWrongVote()
     {
         game.addParticipant(testPlayer);
         game.makeAVote("9",testPlayer.getPlayerID());
+        String message = "Dear, " + testPlayer.getPlayerName() + " you wrote wrong vote";
+        Assert.assertEquals(message, sender.getLastMessage());
+    }
+
+    @org.junit.Test
+    public void makeAVote_should_changePlayersVotedID()
+    {
+        game.addParticipant(testPlayer);
+        TestPlayer alex = new TestPlayer("Alex", "new id", 2);
+        game.addParticipant(alex);
+        game.makeAVote("1", alex.getPlayerID());
+        Assert.assertEquals("1", alex.getVotedPlayerID());
+    }
+
+    @org.junit.Test
+    public void makeAVote_should_changePlayersVotedID_when_pass()
+    {
+        game.addParticipant(testPlayer);
+        game.makeAVote("pass", testPlayer.getPlayerID());
+        Assert.assertEquals("pass", testPlayer.getVotedPlayerID());
     }
 
     @org.junit.Test
@@ -67,6 +94,14 @@ public class GameTest {
     }
 
     @org.junit.Test
+    public void addParticipant_should_sendMessageWithPlayersCount()
+    {
+        game.addParticipant(testPlayer);
+        String message ="There are: 1 participants.";
+        Assert.assertEquals(message, sender.getLastMessage());
+    }
+
+    @org.junit.Test
     public void isPlayerParticipant_should_returnTrue_when_playerIsParticipant()
     {
         game.addParticipant(testPlayer);
@@ -88,6 +123,7 @@ public class GameTest {
     @org.junit.Test
     public void sendMessage()
     {
-
+        game.sendMessage("message");
+        Assert.assertEquals("message", sender.getLastMessage());
     }
 }
