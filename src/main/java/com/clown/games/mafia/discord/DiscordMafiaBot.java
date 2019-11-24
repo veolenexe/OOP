@@ -2,6 +2,7 @@ package com.clown.games.mafia.discord;
 
 import com.clown.games.mafia.Game;
 import com.clown.games.mafia.ICommand;
+import com.clown.games.mafia.IGame;
 import com.clown.games.mafia.messaging.IMessageListener;
 import com.clown.games.mafia.player.IPlayer;
 import com.clown.games.mafia.roles.IMove;
@@ -12,7 +13,7 @@ import java.util.Optional;
 
 public class DiscordMafiaBot
 {
-    private HashMap<String, Game> games;
+    private HashMap<String, IGame> games;
     private HashMap<String, ICommand> preparationCommandHandlers;
     private HashMap<String, ICommand> dayCommandHandlers;
     private HashMap<String, ICommand> nightCommandHandlers;
@@ -46,7 +47,7 @@ public class DiscordMafiaBot
             return;
         }
 
-        Game game = games.get(channelId);
+        IGame game = games.get(channelId);
         User user = messageListener.getMessageAuthor();
 
         if ("!help".equalsIgnoreCase(message))
@@ -57,7 +58,7 @@ public class DiscordMafiaBot
         handleCommands(message, game, user);
     }
 
-    private void handleCommands(String message, Game game, User user)
+    private void handleCommands(String message, IGame game, User user)
     {
         switch (game.getCurrentGameState())
         {
@@ -87,7 +88,7 @@ public class DiscordMafiaBot
 
     private void beginMafiaInASeparateChannel(String channelId)
     {
-        Game game;
+        IGame game;
         if(games.containsKey(channelId))
         {
             game = games.get(channelId);
@@ -103,7 +104,7 @@ public class DiscordMafiaBot
         game.prepareForGame();
     }
     
-    private void handleJoinMafia(String message, Game game, User user)
+    private void handleJoinMafia(String message, IGame game, User user)
     {
         if (!game.isPlayerParticipant(user.getId()))//Убрать для теста.
         {
@@ -112,7 +113,7 @@ public class DiscordMafiaBot
         }
     }
 
-    private void handleMafiaStart(String message, Game game, User user)
+    private void handleMafiaStart(String message, IGame game, User user)
     {
         if (game.getCurrentPlayersCount() < 1)
         {
@@ -126,14 +127,14 @@ public class DiscordMafiaBot
         }
     }
 
-    private void handleVote(String message, Game game, User user)
+    private void handleVote(String message, IGame game, User user)
     {
         String playerNumber = message.split(" ")[1];
         String votedPlayerId = user.getId();
         game.makeAVote(playerNumber, votedPlayerId);
     }
 
-    private void handlePrivateMessage(String message, Game game, User user)
+    private void handlePrivateMessage(String message, IGame game, User user)
     {
         String[] messageData = message.substring(3).split(" ");
 
@@ -168,7 +169,7 @@ public class DiscordMafiaBot
         }
     }
 
-    private void printHelp(Game game)
+    private void printHelp(IGame game)
     {
         game.sendMessage("No one will help you!");
     }

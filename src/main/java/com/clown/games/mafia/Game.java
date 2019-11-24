@@ -10,7 +10,7 @@ import net.dv8tion.jda.internal.utils.tuple.Pair;
 import java.util.*;
 
 
-public class Game
+public class Game implements IGame
 {
     private List<IPlayer> participants;
     private List<Pair<Integer, IMove>> moves;
@@ -260,17 +260,17 @@ public class Game
     private void shuffleRoles()
     {
         int playerCount = getCurrentPlayersCount();
-        mafiaCount = playerCount / 2; // 4
+        mafiaCount = playerCount / 4;
         int doctorIndex = mafiaCount;
         int detectiveIndex = mafiaCount + 1;
-        int citizenIndex = mafiaCount; // + 2
+        int citizenIndex = mafiaCount + 2;
         Collections.shuffle(participants);
         for (int i = 0; i < mafiaCount; i++)
         {
             participants.get(i).setRole(Roles.MAFIA);
         }
-        //participants.get(doctorIndex).setRole(Roles.DOCTOR);
-        //participants.get(detectiveIndex).setRole(Roles.DETECTIVE);
+        participants.get(doctorIndex).setRole(Roles.DOCTOR);
+        participants.get(detectiveIndex).setRole(Roles.DETECTIVE);
         for (int i = citizenIndex; i < playerCount; i++)
         {
             participants.get(i).setRole(Roles.CITIZEN);
