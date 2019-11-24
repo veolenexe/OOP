@@ -260,6 +260,7 @@ public class Game implements IGame
     private void shuffleRoles()
     {
         int playerCount = getCurrentPlayersCount();
+        if(playerCount == 0) return;
         mafiaCount = playerCount / 4;
         int doctorIndex = mafiaCount;
         int detectiveIndex = mafiaCount + 1;
@@ -315,7 +316,8 @@ public class Game implements IGame
 
     public void sendMessage(String message)
     {
-        messageSender.sendMessage(message);
+        if(messageSender != null)
+            messageSender.sendMessage(message);
     }
 
 }
