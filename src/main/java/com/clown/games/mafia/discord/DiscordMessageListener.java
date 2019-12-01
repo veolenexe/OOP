@@ -54,7 +54,7 @@ public class DiscordMessageListener extends ListenerAdapter implements IMessageL
         this.receivingFunction = receivingFunction;
     }
 
-    TextChannel getTextChannel()
+    public TextChannel getTextChannel()
     {
         return textChannel;
     }

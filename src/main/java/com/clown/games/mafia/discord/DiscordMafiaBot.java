@@ -54,8 +54,15 @@ public class DiscordMafiaBot
         {
             printHelp(game);
         }
+        if (game != null)
+        {
+            handleCommands(message, game, user);
+            if(game.hasEnded())
+            {
+                games.remove(channelId);
+            }
+        }
 
-        handleCommands(message, game, user);
     }
 
     private void handleCommands(String message, IGame game, User user)

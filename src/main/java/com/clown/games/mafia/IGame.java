@@ -26,5 +26,7 @@ public interface IGame
 
     void addMove(int movePriority, IMove move);
 
+    boolean hasEnded();
+
     void makeAVote(String playersVote, String votingPlayerID);
 }

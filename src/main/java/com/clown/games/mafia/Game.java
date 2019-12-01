@@ -34,6 +34,7 @@ public class Game implements IGame
     {
         return dayCount;
     }
+
     public void prepareForGame()
     {
         currentState = GameState.PREPARATION;
@@ -51,10 +52,16 @@ public class Game implements IGame
 
     private void update()
     {
-        if(isGameActive())
+        if (isGameActive())
         {
             fsm.update();
         }
+    }
+
+    @Override
+    public boolean hasEnded()
+    {
+        return mafiaCount >= alivePlayers / 2 || mafiaCount == 0;
     }
 
     private void beginDayState()
@@ -68,8 +75,7 @@ public class Game implements IGame
             sendMessage("Write !Mafia night to begin the game!");
             fsm.setState(this::beginNightState);
             update();
-        }
-        else
+        } else
         {
             sendMessage("Morning, citizens! There are some news...");
             sendDayInformation();
@@ -82,19 +88,20 @@ public class Game implements IGame
     private void refreshStats()
     {
         votes = new HashMap<>();
-        for (IPlayer player: participants)
+        for (IPlayer player : participants)
         {
-            if(player.isAlive())
+            if (player.isAlive())
             {
                 votes.put(player.getPlayerID(), 0);
                 player.setHasVoted(false);
-                if(player.getRole()!=Roles.CITIZEN)
+                if (player.getRole() != Roles.CITIZEN)
                 {
                     player.setMadeMove(false);
                 }
             }
         }
     }
+
     public void addMove(int movePriority, IMove move)
     {
         moves.add(Pair.of(movePriority, move));
@@ -132,7 +139,7 @@ public class Game implements IGame
             if (player.isDead())
             {
                 alivePlayers--;
-                if (player.getRole()==Roles.MAFIA)
+                if (player.getRole() == Roles.MAFIA)
                 {
                     mafiaCount--;
                 }
@@ -225,8 +232,7 @@ public class Game implements IGame
             playerNumberToVote = Integer.parseInt(playersVote);
 
             return getPlayerByNumber(playerNumberToVote).isEmpty();
-        }
-        catch (NumberFormatException e)
+        } catch (NumberFormatException e)
         {
             return !playersVote.equals("pass");
         }
@@ -264,7 +270,7 @@ public class Game implements IGame
     private void shuffleRoles()
     {
         int playerCount = getCurrentPlayersCount();
-        if(playerCount == 0) return;
+        if (playerCount == 0) return;
         mafiaCount = playerCount / 4;
         int doctorIndex = mafiaCount;
         int detectiveIndex = mafiaCount + 1;
@@ -320,7 +326,7 @@ public class Game implements IGame
 
     public void sendMessage(String message)
     {
-        if(messageSender != null)
+        if (messageSender != null)
             messageSender.sendMessage(message);
     }
 
