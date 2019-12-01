@@ -57,7 +57,7 @@ public class DiscordMafiaBot
         if (game != null)
         {
             handleCommands(message, game, user);
-            if(game.hasEnded())
+            if(game.getHasEnded())
             {
                 games.remove(channelId);
             }

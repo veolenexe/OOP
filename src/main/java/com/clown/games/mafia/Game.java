@@ -21,6 +21,7 @@ public class Game implements IGame
     private IMessageSender messageSender;
     private int dayCount;
     private IFSM fsm;
+    private boolean hasEnded;
 
     public Game()
     {
@@ -28,6 +29,7 @@ public class Game implements IGame
         moves = new ArrayList<>();
         votes = new HashMap<>();
         fsm = new FSM();
+        hasEnded = false;
     }
 
     public int getDayCount()
@@ -59,9 +61,9 @@ public class Game implements IGame
     }
 
     @Override
-    public boolean hasEnded()
+    public boolean getHasEnded()
     {
-        return mafiaCount >= alivePlayers / 2 || mafiaCount == 0;
+        return hasEnded;
     }
 
     private void beginDayState()
@@ -79,6 +81,10 @@ public class Game implements IGame
         {
             sendMessage("Morning, citizens! There are some news...");
             sendDayInformation();
+            if(hasEnded)
+            {
+                return;
+            }
             sendMessage("Now it's time to vote! Vote wisely...\n");
             sendMessage("Write '!Vote 1', to vote for first player, and so on...\n");
         }
@@ -130,8 +136,6 @@ public class Game implements IGame
     private void sendDayInformation()
     {
         StringBuilder dayInformation = new StringBuilder();
-
-
         List<IPlayer> newParticipants = new ArrayList<>();
 
         for (IPlayer player : participants)
@@ -165,6 +169,16 @@ public class Game implements IGame
         }
         participants = newParticipants;
         sendMessage(dayInformation.toString());
+        if(mafiaCount >= alivePlayers / 2)
+        {
+            sendMessage("Mafia won!\n");
+            hasEnded = true;
+        }
+        if(mafiaCount==0)
+        {
+            sendMessage("Mafia lose!\n");
+            hasEnded = true;
+        }
     }
 
     private void beginNightState()
