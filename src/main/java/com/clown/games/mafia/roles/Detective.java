@@ -6,7 +6,7 @@ public class Detective extends Role
 {
     private static boolean madeMove = false;
 
-    Detective()
+    public Detective()
     {
         playerMovePriority = 3;
         role = Roles.DETECTIVE;
@@ -15,6 +15,11 @@ public class Detective extends Role
     @Override
     public IMove makeMove(IPlayer player)
     {
+        if(madeMove)
+        {
+            throw new RuntimeException();
+        }
+        madeMove = true;
         return () -> player.sendPrivateMessage("ТЫ НА ЗОНУ");
     }
 

@@ -6,7 +6,7 @@ public class Doctor extends Role
 {
     private static boolean madeMove = false;
 
-    Doctor()
+    public Doctor()
     {
         playerMovePriority = 2;
         role = Roles.DOCTOR;
@@ -15,6 +15,11 @@ public class Doctor extends Role
     @Override
     public IMove makeMove(IPlayer player)
     {
+        if(madeMove)
+        {
+            throw new RuntimeException();
+        }
+        madeMove = true;
         return () -> player.setIsDead(false);
     }
 

@@ -30,6 +30,10 @@ public class Game implements IGame
         fsm = new FSM();
     }
 
+    public int getDayCount()
+    {
+        return dayCount;
+    }
     public void prepareForGame()
     {
         currentState = GameState.PREPARATION;

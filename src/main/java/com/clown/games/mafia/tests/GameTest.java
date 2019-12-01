@@ -37,13 +37,6 @@ public class GameTest {
     }
 
     @org.junit.Test
-    public void startGame_should_sendPlayersTheirRoles()
-    {
-        game.startGame();
-        Assert.assertTrue(testPlayer.getLastPrivateMessage().contains("Your role is"));
-    }
-
-    @org.junit.Test
     public void makeAVote_should_sendMessageOnWrongVote()
     {
         game.addParticipant(testPlayer);
@@ -52,15 +45,6 @@ public class GameTest {
         Assert.assertEquals(message, sender.getLastMessage());
     }
 
-    @org.junit.Test
-    public void makeAVote_should_changePlayersVotedID()
-    {
-        game.addParticipant(testPlayer);
-        TestPlayer alex = new TestPlayer("Alex", "new id", 2);
-        game.addParticipant(alex);
-        game.makeAVote("1", alex.getPlayerID());
-        Assert.assertEquals("1", alex.getVotedPlayerID());
-    }
 
     @org.junit.Test
     public void makeAVote_should_changePlayersVotedID_when_pass()
@@ -121,7 +105,7 @@ public class GameTest {
     }
 
     @org.junit.Test
-    public void sendMessage()
+    public void sendMessage_should_sendMessage()
     {
         game.sendMessage("message");
         Assert.assertEquals("message", sender.getLastMessage());

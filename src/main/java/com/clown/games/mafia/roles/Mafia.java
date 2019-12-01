@@ -6,7 +6,7 @@ public class Mafia extends Role
 {
     private static boolean madeMove = false;
 
-    Mafia()
+    public Mafia()
     {
         playerMovePriority = 1;
         role = Roles.MAFIA;
@@ -15,6 +15,11 @@ public class Mafia extends Role
     @Override
     public IMove makeMove(IPlayer player)
     {
+        if(madeMove)
+        {
+            throw new RuntimeException();
+        }
+        madeMove = true;
         return () -> player.setIsDead(true);
     }
 

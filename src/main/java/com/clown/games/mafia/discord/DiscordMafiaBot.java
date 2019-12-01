@@ -115,7 +115,7 @@ public class DiscordMafiaBot
 
     private void handleMafiaStart(String message, IGame game, User user)
     {
-        if (game.getCurrentPlayersCount() < 1)
+        if (game.getCurrentPlayersCount() < 5)
         {
             game.sendMessage("недостаточное кол-во игроков," +
                     " необходимо 5 или больше людей в игре: " +
@@ -154,7 +154,6 @@ public class DiscordMafiaBot
                 }
                 IPlayer playerToMakeMoveOn = playerToMakeMoveOnOptional.get();
                 IMove move = player.makeMove(playerToMakeMoveOn);
-                player.setMadeMove(true);
                 game.addMove(player.getPlayerMovePriority(), move);
             }
             else
