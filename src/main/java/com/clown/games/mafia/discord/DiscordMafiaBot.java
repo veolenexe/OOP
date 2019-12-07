@@ -9,14 +9,15 @@ import com.clown.games.mafia.roles.IMove;
 import net.dv8tion.jda.api.entities.User;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 public class DiscordMafiaBot
 {
-    private HashMap<String, IGame> games;
-    private HashMap<String, ICommand> preparationCommandHandlers;
-    private HashMap<String, ICommand> dayCommandHandlers;
-    private HashMap<String, ICommand> nightCommandHandlers;
+    private Map<String, IGame> games;
+    private Map<String, ICommand> preparationCommandHandlers;
+    private Map<String, ICommand> dayCommandHandlers;
+    private Map<String, ICommand> nightCommandHandlers;
     private DiscordMessageListener messageListener;
 
     public DiscordMafiaBot(DiscordMessageListener messageListener)
