@@ -1,9 +1,9 @@
-package com.clown.games.mafia.tests;
+package tests;
 
 import com.clown.games.mafia.Game;
 import com.clown.games.mafia.player.IPlayer;
 import com.clown.games.mafia.roles.*;
-import com.clown.games.mafia.tests.testClasses.TestPlayer;
+import tests.testClasses.TestPlayer;
 import org.junit.Assert;
 
 public class RolesTest {

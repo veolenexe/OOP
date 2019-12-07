@@ -1,10 +1,10 @@
-package com.clown.games.mafia.tests;
+package tests;
 
 import com.clown.games.mafia.Game;
 import com.clown.games.mafia.GameState;
 import com.clown.games.mafia.IGame;
-import com.clown.games.mafia.tests.testClasses.TestPlayer;
-import com.clown.games.mafia.tests.testClasses.TestMessageSender;
+import tests.testClasses.TestPlayer;
+import tests.testClasses.TestMessageSender;
 import org.junit.Assert;
 
 public class GameTest {

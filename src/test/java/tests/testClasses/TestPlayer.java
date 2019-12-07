@@ -1,4 +1,4 @@
-package com.clown.games.mafia.tests.testClasses;
+package tests.testClasses;
 
 import com.clown.games.mafia.player.Player;
 
