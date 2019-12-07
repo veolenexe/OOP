@@ -4,7 +4,7 @@ import com.clown.games.mafia.player.IPlayer;
 
 public interface IRole
 {
-    IMove makeMove(IPlayer player);
+    IMove makeMove(IPlayer votingPlayer, IPlayer votedPlayer);
     Roles getRole();
     int getPlayerMovePriority();
     boolean getMadeMove();

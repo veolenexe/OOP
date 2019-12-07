@@ -13,14 +13,14 @@ public class Detective extends Role
     }
 
     @Override
-    public IMove makeMove(IPlayer player)
+    public IMove makeMove(IPlayer votingPlayer, IPlayer votedPlayer)
     {
         if(madeMove)
         {
             throw new RuntimeException();
         }
         madeMove = true;
-        return () -> player.sendPrivateMessage("ТЫ НА ЗОНУ");
+        return () -> votingPlayer.sendPrivateMessage(votedPlayer.getRole().toString());
     }
 
     @Override

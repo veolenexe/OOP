@@ -12,7 +12,7 @@ public class Citizen extends Role
     }
 
     @Override
-    public IMove makeMove(IPlayer player)
+    public IMove makeMove(IPlayer votingPlayer, IPlayer votedPlayer)
     {
         return () -> madeMove = true;
     }

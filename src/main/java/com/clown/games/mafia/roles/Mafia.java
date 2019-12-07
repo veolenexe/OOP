@@ -13,14 +13,14 @@ public class Mafia extends Role
     }
 
     @Override
-    public IMove makeMove(IPlayer player)
+    public IMove makeMove(IPlayer votingPlayer, IPlayer votedPlayer)
     {
         if(madeMove)
         {
             throw new RuntimeException();
         }
         madeMove = true;
-        return () -> player.setIsDead(true);
+        return () -> votedPlayer.setIsDead(true);
     }
 
     @Override
