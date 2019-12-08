@@ -61,6 +61,7 @@ public class DiscordMafiaBot
         {
             printHelp(game);
         }
+
         if (game != null)
         {
             handleCommands(message, game, user);
@@ -70,7 +71,6 @@ public class DiscordMafiaBot
                 games.remove(channelId);
             }
         }
-
     }
 
     private void FillDatabase(IGame game)
@@ -89,6 +89,16 @@ public class DiscordMafiaBot
 
     private void handleCommands(String message, IGame game, User user)
     {
+        if("!stats".equalsIgnoreCase(message))
+        {
+            printPlayersStatistic(game);
+        }
+
+        if("!mystats".equalsIgnoreCase(message))
+        {
+            printPlayerStatistic(game, user);
+        }
+
         switch (game.getCurrentGameState())
         {
             case PREPARATION:
@@ -203,6 +213,18 @@ public class DiscordMafiaBot
         {
             game.sendMessage("How could this happen?");
         }
+    }
+
+    private void printPlayerStatistic(IGame game, User user)
+    {
+        String statistics = database.getPlayerInfo(user.getId());
+        game.sendMessage(statistics);
+    }
+
+    private void printPlayersStatistic(IGame game)
+    {
+        String statistics = database.getPlayersInfo(game.getParticipants());
+        game.sendMessage(statistics);
     }
 
     private void printHelp(IGame game)

@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Properties;
 
 public class MafiaMySQLDatabase extends MySQLDatabase
@@ -59,7 +60,7 @@ public class MafiaMySQLDatabase extends MySQLDatabase
     }
 
     public boolean isPlayerInDatabase(IPlayer player){
-        String  id = player.getPlayerID();
+        String id = player.getPlayerID();
         String query = String.format("SELECT * FROM playersInfo WHERE UID = '%s'", id);
         ResultSet result = executeQuery(query);
         try {
@@ -68,6 +69,38 @@ public class MafiaMySQLDatabase extends MySQLDatabase
             e.printStackTrace();
             return false;
         }
+    }
+
+    public String getPlayersInfo(List<IPlayer> players)
+    {
+        StringBuilder info = new StringBuilder();
+        for(IPlayer player : players)
+        {
+            String playerInfo = getPlayerInfo(player.getPlayerID());
+            info.append(playerInfo);
+        }
+        return info.toString();
+    }
+
+    public String getPlayerInfo(String id)
+    {
+        String query = String.format("SELECT * FROM playersInfo WHERE UID = '%s'", id);
+        ResultSet result = executeQuery(query);
+        String info = "";
+        try {
+            result.next();
+            String dbName = result.getString("Nickname");
+            String mafiaWin = result.getString("MafiaWin");
+            String citizenWin = result.getString("CitizenWin");
+            info = String.format(
+                    "%s, won %s as mafia and %s as citizen.",
+                    dbName,
+                    mafiaWin,
+                    citizenWin);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return info + "\n";
     }
 
     public void connectToDb(){

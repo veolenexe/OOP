@@ -16,6 +16,7 @@ public interface IGame
     Optional<IPlayer> getPlayerByNumber(int playerNumber);
     List<IPlayer> getParticipantsByRole(Roles role);
     List<IPlayer> getParticipantsExcludingRole(Roles role);
+    List<IPlayer> getParticipants();
     boolean getMafiaWon();
     void addParticipant(IPlayer participant);
 
