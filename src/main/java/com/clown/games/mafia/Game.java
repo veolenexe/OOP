@@ -13,6 +13,7 @@ import java.util.*;
 public class Game implements IGame
 {
     private List<IPlayer> participants;
+    private List<IPlayer> initialParticipants;
     private List<Pair<Integer, IMove>> moves;
     private Map<String, Integer> votes;
     private int mafiaCount;
@@ -22,10 +23,28 @@ public class Game implements IGame
     private int dayCount;
     private IFSM fsm;
     private boolean hasEnded;
+    private boolean mafiaWon;
+
+    public List<IPlayer> getParticipantsByRole(Roles role) {
+        List<IPlayer> players = new ArrayList<>();
+        for (IPlayer player : initialParticipants)
+            if(player.getRole() == role)
+                players.add(player);
+        return players;
+    }
+
+    public List<IPlayer> getParticipantsExcludingRole(Roles role) {
+        List<IPlayer> players = new ArrayList<>();
+        for (IPlayer player : initialParticipants)
+            if(player.getRole() != role)
+                players.add(player);
+        return players;
+    }
 
     public Game()
     {
         participants = new ArrayList<>();
+        initialParticipants = new ArrayList<>();
         moves = new ArrayList<>();
         votes = new HashMap<>();
         fsm = new FSM();
@@ -64,6 +83,10 @@ public class Game implements IGame
     public boolean getHasEnded()
     {
         return hasEnded;
+    }
+
+    public boolean getMafiaWon() {
+        return mafiaWon;
     }
 
     private void beginDayState()
@@ -173,6 +196,7 @@ public class Game implements IGame
         {
             sendMessage("Mafia won!\n");
             hasEnded = true;
+            mafiaWon = true;
         }
         if(mafiaCount==0)
         {
@@ -309,6 +333,7 @@ public class Game implements IGame
     public void addParticipant(IPlayer participant)
     {
         participants.add(participant);
+        initialParticipants.add(participant);
         sendMessage("There are: " + participants.size() + " participants.");
     }
 

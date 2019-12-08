@@ -72,7 +72,7 @@ public abstract class Player implements IPlayer
     @Override
     public IMove makeMove(IPlayer player)
     {
-        return role.makeMove(player);
+        return role.makeMove(this, player);
     }
 
     @Override

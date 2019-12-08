@@ -1,5 +1,6 @@
 package com.clown.games.mafia;
 
+import com.clown.games.mafia.db.MafiaMySQLDatabase;
 import com.clown.games.mafia.discord.DiscordMafiaBot;
 import com.clown.games.mafia.discord.DiscordMessageListener;
 import net.dv8tion.jda.api.AccountType;
@@ -15,7 +16,8 @@ public class Main
         String token = "";
         builder.setToken(token);
         DiscordMessageListener discordMessageListener = new DiscordMessageListener();
-        DiscordMafiaBot discordMafiaBot = new DiscordMafiaBot(discordMessageListener);
+        MafiaMySQLDatabase database = new MafiaMySQLDatabase();
+        DiscordMafiaBot discordMafiaBot = new DiscordMafiaBot(discordMessageListener, database);
         builder.addEventListeners(discordMafiaBot.getMessageListener());
         builder.build();
     }
