@@ -1,4 +1,4 @@
-package tests;
+package tests.roles;
 
 import com.clown.games.mafia.Game;
 import com.clown.games.mafia.player.IPlayer;

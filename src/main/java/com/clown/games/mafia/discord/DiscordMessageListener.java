@@ -59,7 +59,7 @@ public class DiscordMessageListener extends ListenerAdapter implements IMessageL
         return textChannel;
     }
 
-    User getMessageAuthor()
+    public User getMessageAuthor()
     {
         return messageAuthor;
     }

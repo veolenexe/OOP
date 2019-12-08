@@ -3,6 +3,7 @@ package tests;
 import com.clown.games.mafia.Game;
 import com.clown.games.mafia.GameState;
 import com.clown.games.mafia.IGame;
+import com.clown.games.mafia.player.IPlayer;
 import tests.testClasses.TestPlayer;
 import tests.testClasses.TestMessageSender;
 import org.junit.Assert;
@@ -10,7 +11,7 @@ import org.junit.Assert;
 public class GameTest {
 
     private IGame game;
-    private TestPlayer testPlayer;
+    private IPlayer testPlayer;
     private TestMessageSender sender;
 
     @org.junit.Before
