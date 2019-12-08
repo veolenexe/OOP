@@ -3,7 +3,9 @@ package com.clown.games.mafia;
 import com.clown.games.mafia.messaging.IMessageSender;
 import com.clown.games.mafia.player.IPlayer;
 import com.clown.games.mafia.roles.IMove;
+import com.clown.games.mafia.roles.Roles;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface IGame
@@ -12,6 +14,9 @@ public interface IGame
     void startGame();
     Optional<IPlayer> getPlayerByID(String playerID);
     Optional<IPlayer> getPlayerByNumber(int playerNumber);
+    List<IPlayer> getParticipantsByRole(Roles role);
+    List<IPlayer> getParticipantsExcludingRole(Roles role);
+    boolean getMafiaWon();
     void addParticipant(IPlayer participant);
 
     void setMessageSender(IMessageSender gameMessageSender);

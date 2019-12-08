@@ -5,4 +5,4 @@ pom.xml
 mafia.iml
 OOP.iml
 /target
-Token
+src/main/resources/token.properties

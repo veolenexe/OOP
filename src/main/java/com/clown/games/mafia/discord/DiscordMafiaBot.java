@@ -3,12 +3,15 @@ package com.clown.games.mafia.discord;
 import com.clown.games.mafia.Game;
 import com.clown.games.mafia.ICommand;
 import com.clown.games.mafia.IGame;
+import com.clown.games.mafia.db.MafiaMySQLDatabase;
 import com.clown.games.mafia.messaging.IMessageListener;
 import com.clown.games.mafia.player.IPlayer;
 import com.clown.games.mafia.roles.IMove;
+import com.clown.games.mafia.roles.Roles;
 import net.dv8tion.jda.api.entities.User;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -19,10 +22,12 @@ public class DiscordMafiaBot
     private Map<String, ICommand> dayCommandHandlers;
     private Map<String, ICommand> nightCommandHandlers;
     private DiscordMessageListener messageListener;
+    private MafiaMySQLDatabase database;
 
-    public DiscordMafiaBot(DiscordMessageListener messageListener)
+    public DiscordMafiaBot(DiscordMessageListener messageListener, MafiaMySQLDatabase database)
     {
         this.messageListener = messageListener;
+        this.database = database;
         messageListener.setReceivingFunction(message ->
         {
             onMessageReceived(message);
@@ -36,6 +41,7 @@ public class DiscordMafiaBot
         dayCommandHandlers.put("!vote", this::handleVote);
         nightCommandHandlers = new HashMap<>();
         nightCommandHandlers.put("P:", this::handlePrivateMessage);
+        database.connectToDb();
     }
 
     private void onMessageReceived(String message)
@@ -60,10 +66,25 @@ public class DiscordMafiaBot
             handleCommands(message, game, user);
             if(game.getHasEnded())
             {
+                FillDatabase(game);
                 games.remove(channelId);
             }
         }
 
+    }
+
+    private void FillDatabase(IGame game)
+    {
+        if(game.getMafiaWon())
+        {
+            List<IPlayer> mafiaPlayers = game.getParticipantsByRole(Roles.MAFIA);
+            for (IPlayer player : mafiaPlayers)
+                database.addMafiaWin(player);
+            return;
+        }
+        List<IPlayer> notMafiaPlayers = game.getParticipantsExcludingRole(Roles.MAFIA);
+        for (IPlayer player : notMafiaPlayers)
+            database.addCitizenWin(player);
     }
 
     private void handleCommands(String message, IGame game, User user)
@@ -117,6 +138,14 @@ public class DiscordMafiaBot
         if (!game.isPlayerParticipant(user.getId()))//Убрать для теста.
         {
             IPlayer newPlayer = new DiscordPlayer(user, game.getCurrentPlayersCount() + 1);
+            if(!database.isPlayerInDatabase(newPlayer))
+            {
+                database.addNewPlayer(newPlayer);
+            }
+            else
+            {
+                database.updatePlayerName(newPlayer);
+            }
             game.addParticipant(newPlayer);
         }
     }
