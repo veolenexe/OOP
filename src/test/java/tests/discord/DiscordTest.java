@@ -2,6 +2,9 @@ package tests.discord;
 import com.clown.games.mafia.Game;
 import com.clown.games.mafia.GameState;
 import com.clown.games.mafia.IGame;
+import com.clown.games.mafia.db.Database;
+import com.clown.games.mafia.db.MafiaMySQLDatabase;
+import com.clown.games.mafia.db.MySQLDatabase;
 import com.clown.games.mafia.discord.DiscordMafiaBot;
 import com.clown.games.mafia.discord.DiscordMessageListener;
 import com.clown.games.mafia.discord.DiscordMessageSender;
@@ -33,7 +36,9 @@ public class DiscordTest
         Mockito.when(listener.getTextChannel()).thenReturn(textChannel);
         Mockito.when(textChannel.getId()).thenReturn("12");
         Whitebox.setInternalState(sender, "textChannel", textChannel);
-        discord = new DiscordMafiaBot(listener);
+        MafiaMySQLDatabase database = Mockito.mock(MafiaMySQLDatabase.class);
+        Mockito.doNothing().when(database).connectToDb();
+        discord = new DiscordMafiaBot(listener, database);
         game.setMessageSender(sender);
         testPlayer = new TestPlayer("Gordon Freeman", "id", 1);
     }
