@@ -33,6 +33,10 @@ public class Game implements IGame
         return players;
     }
 
+    public List<IPlayer> getParticipants() {
+        return List.copyOf(initialParticipants);
+    }
+
     public List<IPlayer> getParticipantsExcludingRole(Roles role) {
         List<IPlayer> players = new ArrayList<>();
         for (IPlayer player : initialParticipants)
