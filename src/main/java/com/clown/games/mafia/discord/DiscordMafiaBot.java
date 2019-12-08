@@ -92,18 +92,20 @@ public class DiscordMafiaBot
         if("!stats".equalsIgnoreCase(message))
         {
             printPlayersStatistic(game);
+            return;
         }
 
         if("!mystats".equalsIgnoreCase(message))
         {
             printPlayerStatistic(game, user);
+            return;
         }
 
         switch (game.getCurrentGameState())
         {
             case PREPARATION:
             {
-                preparationCommandHandlers.get(message).handleCommand(message, game, user);
+                 preparationCommandHandlers.get(message).handleCommand(message, game, user);
                 break;
             }
             case DAY:
@@ -218,7 +220,7 @@ public class DiscordMafiaBot
     private void printPlayerStatistic(IGame game, User user)
     {
         String statistics = database.getPlayerInfo(user.getId());
-        game.sendMessage(statistics);
+        user.openPrivateChannel().queue(channel -> channel.sendMessage(statistics).queue());;
     }
 
     private void printPlayersStatistic(IGame game)
