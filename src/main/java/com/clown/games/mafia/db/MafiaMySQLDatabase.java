@@ -84,5 +84,6 @@ public class MafiaMySQLDatabase extends MySQLDatabase
         String password = props.getProperty("password");
 
         establishConnection(url, username, password);
+        System.out.println(String.format("Successfully connected to %s", url));
     }
 }
